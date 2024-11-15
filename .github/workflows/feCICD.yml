@@ -60,7 +60,7 @@ jobs:
         script: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/medo:latest
           docker stop fe || true
-          docker run -d --log-driver=syslog -p 80:80 --name fe ${{ secrets.DOCKER_USERNAME }}/medo:latest
+          docker run -d -p 80:80 --name fe ${{ secrets.DOCKER_USERNAME }}/medo:latest
           docker rm $(docker ps --filter 'status=exited' -a -q)
           docker image prune -a -f
 
