@@ -1,24 +1,39 @@
 import React, { useState } from "react";
-import OAuthButton from "./OAuthButton"; // OAuth 버튼 컴포넌트
-// import axios from "axios";
+// import OAuthButton from "./OAuthButton";
+import Button from "./common/Button";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const api = "http://localhost:8080/book";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    // 로컬 로그인 로직 (JWT 처리 등)
+  const handleOAuthLogin = (provider) => {
+    // OAuth 인증 URL로 이동
+    window.location.href = `${api}/auth/${provider}/login`;
   };
 
-  const handleOAuthLogin = async (provider) => {
-    // 카카오/네이버 로그인 처리 (OAuth2)
+  const handleLogin = async () => {
     try {
-      window.location.href = `${api}/auth/${provider}/login`;
+      const response = await axios.post(`${api}/auth/login`, {
+        email,
+        password,
+      });
+
+      // JWT 토큰을 로컬 스토리지에 저장
+      localStorage.setItem("token", response.data.token);
+      alert("로그인 성공!");
     } catch (error) {
-      console.error("login error", error);
+      console.error("로그인 실패:", error);
+      alert("로그인 실패");
     }
+  };
+
+  const handleRegisterRedirect = () => {
+    navigate("/register"); // 회원가입 페이지로 이동
   };
 
   return (
@@ -36,10 +51,18 @@ const LoginForm = () => {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="비밀번호"
       />
-      <button onClick={handleLogin}>로그인</button>
-
-      <OAuthButton provider="kakao" onClick={() => handleOAuthLogin("kakao")} />
-      <OAuthButton provider="naver" onClick={() => handleOAuthLogin("naver")} />
+      <Button children="로그인" onClick={handleLogin} type="button" />
+      <Button children="회원가입" onClick={handleRegisterRedirect} type="button" />
+      <Button
+        children="카카오 로그인"
+        onClick={() => handleOAuthLogin("kakao")}
+        type="button"
+      />
+      <Button
+        children="네이버 로그인"
+        onClick={() => handleOAuthLogin("naver")}
+        type="button"
+      />
     </div>
   );
 };
