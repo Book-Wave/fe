@@ -1,5 +1,5 @@
 import React from "react";
-import NewUserForm from "../components/RegisterForm";
+import NewUserForm from "../components/NewUserForm";
 
 const NewUserPage = () => {
   return (

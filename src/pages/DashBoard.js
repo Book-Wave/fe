@@ -1,9 +1,10 @@
 // ./src/pages/DashboardPage.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
+import { whoami } from "../services/AuthService";
 
-const api = "http://localhost:8080/book";
+// const api = "http://localhost:8080/book";
 
 const DashboardPage = () => {
   const [user, setUser] = useState(null);
@@ -21,12 +22,7 @@ const DashboardPage = () => {
     const fetchUserData = async () => {
       console.log(token);
       try {
-        const response = await axios.get(`${api}/member/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        });
+        const response = await whoami(token);
         console.log(response);
         setUser(response.data);
         setLoading(false);
