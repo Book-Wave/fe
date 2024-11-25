@@ -24,8 +24,10 @@ const LoginForm = () => {
       });
 
       // JWT 토큰을 로컬 스토리지에 저장
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("access_token", response.data.access_token);
+      localStorage.setItem("refresh_token", response.data.refresh_token);
       alert("로그인 성공!");
+      navigate("/dashboard");
     } catch (error) {
       console.error("로그인 실패:", error);
       alert("로그인 실패");
@@ -52,7 +54,11 @@ const LoginForm = () => {
         placeholder="비밀번호"
       />
       <Button children="로그인" onClick={handleLogin} type="button" />
-      <Button children="회원가입" onClick={handleRegisterRedirect} type="button" />
+      <Button
+        children="회원가입"
+        onClick={handleRegisterRedirect}
+        type="button"
+      />
       <Button
         children="카카오 로그인"
         onClick={() => handleOAuthLogin("kakao")}

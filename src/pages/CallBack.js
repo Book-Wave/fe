@@ -34,7 +34,8 @@ const OAuthCallback = () => {
       if (response.new_user) {
         navigate("/register");
       } else {
-        localStorage.setItem("token", response.token);
+        localStorage.setItem("access_token", response.access_token);
+        localStorage.setItem("refresh_token", response.refresh_token);
         navigate("/dashboard");
       }
     } catch (error) {
@@ -49,7 +50,8 @@ const OAuthCallback = () => {
       if (response.new_user) {
         navigate("/register");
       } else {
-        localStorage.setItem("token", response.token);
+        localStorage.setItem("access_token", response.access_token);
+        localStorage.setItem("refresh_token", response.refresh_token);
         navigate("/dashboard");
       }
     } catch (error) {
