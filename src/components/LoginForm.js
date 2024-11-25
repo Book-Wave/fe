@@ -34,10 +34,6 @@ const LoginForm = () => {
     }
   };
 
-  const handleRegisterRedirect = () => {
-    navigate("/register"); // 회원가입 페이지로 이동
-  };
-
   return (
     <div>
       <h2>로그인</h2>
@@ -54,11 +50,6 @@ const LoginForm = () => {
         placeholder="비밀번호"
       />
       <Button children="로그인" onClick={handleLogin} type="button" />
-      <Button
-        children="회원가입"
-        onClick={handleRegisterRedirect}
-        type="button"
-      />
       <Button
         children="카카오 로그인"
         onClick={() => handleOAuthLogin("kakao")}

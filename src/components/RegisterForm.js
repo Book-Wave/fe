@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { sendEmail, verifyCode, register } from "../services/AuthService";
+import {
+  sendEmail,
+  verifyCode,
+  register,
+  checkNicknameDuplicate,
+} from "../services/AuthService";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -12,10 +17,36 @@ const Register = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
+  const [nicknameError, setNicknameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [verificationError, setVerificationError] = useState("");
   const [registrationError, setRegistrationError] = useState("");
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
+
+  const handleNicknameChange = (e) => {
+    const newNickname = e.target.value;
+    setNickname(newNickname);
+    setNicknameError(""); // 입력 변경 시 오류 메시지 초기화
+    setIsNicknameAvailable(false); // 중복 여부 초기화
+  };
+
+  // 닉네임 중복 확인 처리
+  const handleNicknameCheck = async () => {
+    try {
+      const isDuplicate = await checkNicknameDuplicate(nickname);
+      if (!isDuplicate) {
+        setNicknameError("이 닉네임은 이미 사용 중입니다.");
+        setIsNicknameAvailable(false);
+      } else {
+        setNicknameError("사용가능한 닉네임입니다."); // 중복이 없으면 오류 메시지 제거
+        setIsNicknameAvailable(true); // 사용 가능한 닉네임으로 표시
+      }
+    } catch (error) {
+      console.error("닉네임 중복 체크 실패:", error);
+      setNicknameError("닉네임 중복 체크에 실패했습니다.");
+    }
+  };
 
   // 이메일 인증 요청
   const handleEmailVerification = async () => {
@@ -54,6 +85,11 @@ const Register = () => {
       return;
     }
 
+    if (!isNicknameAvailable) {
+      alert("닉네임이 중복되었습니다. 다른 닉네임을 선택해주세요.");
+      return;
+    }
+
     try {
       const response = await register(
         email,
@@ -65,6 +101,7 @@ const Register = () => {
       );
       console.log(response);
       alert("회원가입이 완료되었습니다.");
+      navigator("/dashboard");
     } catch (error) {
       setRegistrationError("회원가입 실패");
     }
@@ -124,8 +161,12 @@ const Register = () => {
         type="text"
         placeholder="닉네임"
         value={nickname}
-        onChange={(e) => setNickname(e.target.value)}
+        onChange={handleNicknameChange}
       />
+      <button type="button" onClick={handleNicknameCheck}>
+        닉네임 중복 확인
+      </button>
+      {nicknameError && <p>{nicknameError}</p>}
 
       {/* 생년월일 입력 */}
       <input
@@ -142,7 +183,15 @@ const Register = () => {
       </select>
 
       {/* 회원가입 버튼 */}
-      <button onClick={handleRegister} disabled={!isEmailVerified}>
+      <button
+        onClick={handleRegister}
+        disabled={
+          !isEmailVerified ||
+          !isNicknameAvailable ||
+          passwordError ||
+          password !== confirmPassword
+        }
+      >
         회원가입
       </button>
       {registrationError && <p>{registrationError}</p>}
