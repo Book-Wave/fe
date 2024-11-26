@@ -61,7 +61,7 @@ jobs:
           docker stop fe || true
           docker rm fe || true
           docker pull ${{ secrets.DOCKER_USERNAME }}/medo:latest
-          docker run -d -p 3000:3000 --name fe ${{ secrets.DOCKER_USERNAME }}/medo:latest
+          docker run -d -p 3000:80 --name fe ${{ secrets.DOCKER_USERNAME }}/medo:latest
           docker image prune -a -f
 
 
