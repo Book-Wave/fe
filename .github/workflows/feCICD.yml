@@ -59,10 +59,8 @@ jobs:
         # 도커 작업
         script: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/medo:latest
-          docker stop fe || true
           docker run -d -p 80:80 --name fe ${{ secrets.DOCKER_USERNAME }}/medo:latest
-          docker rm $(docker ps --filter 'status=exited' -a -q)
-          docker image prune -a -f
+
 
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
