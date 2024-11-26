@@ -59,7 +59,7 @@ jobs:
         # 도커 작업
         script: |
           docker stop fe || true
-          docker rm $(docker ps --filter 'status=exited' -a -q)
+          docker rm fe || true
           docker pull ${{ secrets.DOCKER_USERNAME }}/medo:latest
           docker run -d -p 80:80 --name fe ${{ secrets.DOCKER_USERNAME }}/medo:latest
           docker image prune -a -f
