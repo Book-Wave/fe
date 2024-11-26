@@ -6,7 +6,7 @@ import {
 } from "../utils/TokenUtil";
 
 const api = axios.create({
-  baseURL: "52.78.186.21:8080/book",
+  baseURL: "http://52.78.186.21:8080/book",
   headers: {
     "Content-Type": "application/json",
   },
