@@ -4,7 +4,7 @@ import Button from "./common/Button";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const api = "http://52.78.186.21:8080/book";
+const api = "http://52.78.186.21:8080/api/book";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
