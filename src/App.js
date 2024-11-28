@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import CallbackPage from './pages/CallbackPage';
+import DashboardPage from './pages/DashBoard';
+import CallbackPage from './pages/CallBack';
 import NewUser from './pages/NewUser';
 import ChatPage from './pages/ChatPage';
 
@@ -24,5 +24,4 @@ const App = () => {
     </AuthProvider>
   );
 };
-
 export default App;

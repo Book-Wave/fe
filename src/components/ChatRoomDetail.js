@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { fetchRoomDetails } from '../services/chatService';
+import { fetchRoomDetails } from '../services/ChatService';
 
 const ChatRoomDetail = () => {
   const [room, setRoom] = useState({});

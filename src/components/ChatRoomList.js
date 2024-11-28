@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createRoom, fetchRooms } from '../services/chatService';
+import { createRoom, fetchRooms } from '../services/ChatService';
 
 const ChatRoomList = ({ rooms, style }) => {
   const [roomName, setRoomName] = useState('');

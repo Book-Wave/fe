@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import ChatRoomList from '../components/ChatRoomList';
 import ChatRoomDetail from '../components/ChatRoomDetail';
-import { fetchRooms } from '../services/chatService';
+import { fetchRooms } from '../services/ChatService';
 
 const ChatPage = () => {
   const [rooms, setRooms] = useState([]);
