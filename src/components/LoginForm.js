@@ -67,7 +67,7 @@ const LoginForm = () => {
               </label>
               <div className="text-sm">
                 <a
-                  href="#"
+                  href="/"
                   className="font-semibold text-[#0080FF] hover:text-[#0000FF]"
                 >
                   Forgot password?
