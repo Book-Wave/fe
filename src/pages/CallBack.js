@@ -32,7 +32,7 @@ const OAuthCallback = () => {
     try {
       const response = await kakaoCallback(code);
       if (response.new_user) {
-        navigate("/register");
+        navigate("/register/oauth");
       } else {
         localStorage.setItem("access_token", response.access_token);
         localStorage.setItem("refresh_token", response.refresh_token);
@@ -48,7 +48,7 @@ const OAuthCallback = () => {
     try {
       const response = await naverCallback(code, state);
       if (response.new_user) {
-        navigate("/register");
+        navigate("/register/oauth");
       } else {
         localStorage.setItem("access_token", response.access_token);
         localStorage.setItem("refresh_token", response.refresh_token);
