@@ -4,18 +4,13 @@ import Button from "./common/Button";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// const api = "http://52.78.186.21:8080/book";
-const api = "http://localhost:8080/book";
+const api = "http://52.78.186.21:8080/book";
+// const api = "http://localhost:8080/book";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
-  // const handleOAuthLogin = (provider) => {
-  //   // OAuth 인증 URL로 이동
-  //   window.location.href = `${api}/auth/${provider}/login`;
-  // };
 
   const handleLogin = async (e) => {
     e.preventDefault();

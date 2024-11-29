@@ -4,15 +4,6 @@ import Header from "../components/common/Header";
 import OAuthLoginForm from "../components/OAuthLoginForm";
 
 const LoginPage = () => {
-  // const [activeTab, setActiveTab] = useState("login");
-
-  // const renderForm = () => {
-  //   if (activeTab === "login") {
-  //     return <LoginForm />;
-  //   } else if (activeTab === "register") {
-  //     return <RegisterForm />;
-  //   }
-  // };
   return (
     <>
       <Header />
@@ -30,26 +21,6 @@ const LoginPage = () => {
       </div>
       <OAuthLoginForm />
       <LoginForm />
-      {/* <div>
-        <h1 className="text-3xl font-bold underline">
-          로그인 / 회원가입 페이지
-        </h1>
-        <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-          <Button
-            onClick={() => setActiveTab("login")}
-            active={activeTab === "login"}
-          >
-            로그인
-          </Button>
-          <Button
-            onClick={() => setActiveTab("register")}
-            active={activeTab === "register"}
-          >
-            회원가입
-          </Button>
-        </div>
-        {renderForm()}
-      </div> */}
     </>
   );
 };

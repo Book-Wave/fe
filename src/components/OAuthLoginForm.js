@@ -1,8 +1,8 @@
 import React from "react";
 import Button from "./common/Button";
 
-// const api = "http://52.78.186.21:8080/book";
-const api = "http://localhost:8080/book";
+const api = "http://52.78.186.21:8080/book";
+// const api = "http://localhost:8080/book";
 
 function OAuthLoginForm() {
   const handleOAuthLogin = (provider) => {
