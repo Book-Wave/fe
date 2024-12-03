@@ -1,27 +1,28 @@
-import axios from "axios";
+import axios from 'axios';
 import {
   getAccessToken,
   getRefreshToken,
   setAccessToken,
-} from "../utils/TokenUtil";
+} from '../utils/TokenUtil';
 
 const api = axios.create({
-  baseURL: "http://52.78.186.21:8080/book",
+  baseURL: 'http://localhost:8080/book',
+  // baseURL: "http://52.78.186.21:8080/book",
   withCredentials: true,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
 export const kakaoCallback = async (code) => {
-  const response = await api.get("/auth/kakao/callback", {
+  const response = await api.get('/auth/kakao/callback', {
     params: { code },
   });
   return response.data;
 };
 
 export const naverCallback = async (code, state) => {
-  const response = await api.get("/auth/naver/callback", {
+  const response = await api.get('/auth/naver/callback', {
     params: { code, state },
   });
   return response.data;
@@ -29,7 +30,7 @@ export const naverCallback = async (code, state) => {
 
 export const registerOAuth = async (nickname, birthdate, gender) => {
   const response = await api.post(
-    "/auth/social/new",
+    '/auth/social/new',
     {
       nickname,
       birthdate,
@@ -37,7 +38,7 @@ export const registerOAuth = async (nickname, birthdate, gender) => {
     },
     {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     }
   );
@@ -64,7 +65,7 @@ export const whoami = async () => {
   } catch (error) {
     if (error.response?.status === 401 && refresh_token) {
       try {
-        console.log("Access token expired. Attempting refresh ~~");
+        console.log('Access token expired. Attempting refresh ~~');
         const refreshResponse = await api.post(`/auth/refresh`, null, {
           headers: {
             Authorization: `Bearer ${refresh_token}`,
@@ -81,12 +82,12 @@ export const whoami = async () => {
         });
         return retryResponse;
       } catch (refreshError) {
-        console.error("Failed to refresh access token:", refreshError);
-        throw new Error("Failed to refresh access token. Please log in again.");
+        console.error('Failed to refresh access token:', refreshError);
+        throw new Error('Failed to refresh access token. Please log in again.');
       }
     }
     throw new Error(
-      error.response?.data?.message || "Failed to fetch user info"
+      error.response?.data?.message || 'Failed to fetch user info'
     );
   }
 };
@@ -96,7 +97,7 @@ export const sendEmail = async (email) => {
     const response = await api.post(`/auth/email_send`, { email });
     return response;
   } catch (error) {
-    throw new Error("Failed to send email code");
+    throw new Error('Failed to send email code');
   }
 };
 
@@ -105,7 +106,7 @@ export const verifyCode = async (email, code) => {
     const response = await api.post(`auth/email_verify`, { email, code });
     return response;
   } catch (error) {
-    throw new Error("Failed to verify email code");
+    throw new Error('Failed to verify email code');
   }
 };
 
@@ -129,6 +130,6 @@ export const register = async (
     });
     return response;
   } catch (error) {
-    throw new Error("Failed to register member");
+    throw new Error('Failed to register member');
   }
 };

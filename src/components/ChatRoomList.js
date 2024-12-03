@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { createRoom, fetchRooms } from '../services/ChatService';
+import { createRoom } from '../services/ChatService';
+import { useNavigate } from 'react-router-dom';
 
 const ChatRoomList = ({ rooms, style }) => {
   const [roomName, setRoomName] = useState('');
+  const navigate = useNavigate();
 
   const handleCreateRoom = async () => {
     if (!roomName) {
@@ -23,7 +25,7 @@ const ChatRoomList = ({ rooms, style }) => {
     if (sender) {
       localStorage.setItem('wschat.sender', sender);
       localStorage.setItem('wschat.roomId', roomId);
-      window.location.href = `/room/${roomId}`;
+      navigate(`/chat/room/${roomId}`); // React Router 방식으로 이동
     }
   };
 
@@ -43,14 +45,13 @@ const ChatRoomList = ({ rooms, style }) => {
         </button>
       </div>
       <ul className="list-group">
-        {rooms.map((item) => (
+        {rooms.map((room) => (
           <li
-            key={item.roomId}
+            key={room.roomId}
             className="list-group-item list-group-item-action"
-            onClick={() => enterRoom(item.roomId)}
-          >
-            {item.roomName}
-          </li>
+            onClick={() => enterRoom(room.roomId)}
+            dangerouslySetInnerHTML={{ __html: room.roomName }}
+          ></li>
         ))}
       </ul>
     </div>

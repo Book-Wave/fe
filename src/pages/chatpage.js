@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import ChatRoomList from '../components/ChatRoomList';
 import ChatRoomDetail from '../components/ChatRoomDetail';
 import { fetchRooms } from '../services/ChatService';
@@ -12,7 +12,11 @@ const ChatPage = () => {
     const fetchData = async () => {
       try {
         const roomData = await fetchRooms();
-        setRooms(roomData);
+        if (Array.isArray(roomData)) {
+          setRooms(roomData); // 배열이면 상태에 저장
+        } else {
+          console.error('유효하지 않은 데이터 형식입니다.');
+        }
       } catch (error) {
         console.error('채팅방 목록을 가져오는 데 실패했습니다.', error);
       } finally {
@@ -46,18 +50,6 @@ const ChatPage = () => {
         }}
       >
         <Routes>
-          {/* 기본 경로는 첫 번째 채팅방으로 리다이렉트 */}
-          <Route
-            path="/"
-            element={
-              rooms.length > 0 ? (
-                <Navigate to={`/chat/room/${rooms[0].roomId}`} />
-              ) : (
-                <p>채팅방이 없습니다.</p>
-              )
-            }
-          />
-          {/* 특정 채팅방 경로 */}
           <Route path="/room/:roomId" element={<ChatRoomDetail />} />
         </Routes>
       </div>

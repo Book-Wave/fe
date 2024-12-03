@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 // import OAuthButton from "./OAuthButton";
-import Button from "./common/Button";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import Button from './common/Button';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const api = "http://52.78.186.21:8080/book";
+const api = 'http://localhost:8080/book';
+// const api = "http://52.78.186.21:8080/book";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleOAuthLogin = (provider) => {
@@ -24,13 +25,13 @@ const LoginForm = () => {
       });
 
       // JWT 토큰을 로컬 스토리지에 저장
-      localStorage.setItem("access_token", response.data.access_token);
-      localStorage.setItem("refresh_token", response.data.refresh_token);
-      alert("로그인 성공!");
-      navigate("/dashboard");
+      localStorage.setItem('access_token', response.data.access_token);
+      localStorage.setItem('refresh_token', response.data.refresh_token);
+      alert('로그인 성공!');
+      navigate('/dashboard');
     } catch (error) {
-      console.error("로그인 실패:", error);
-      alert("로그인 실패");
+      console.error('로그인 실패:', error);
+      alert('로그인 실패');
     }
   };
 
@@ -52,12 +53,12 @@ const LoginForm = () => {
       <Button children="로그인" onClick={handleLogin} type="button" />
       <Button
         children="카카오 로그인"
-        onClick={() => handleOAuthLogin("kakao")}
+        onClick={() => handleOAuthLogin('kakao')}
         type="button"
       />
       <Button
         children="네이버 로그인"
-        onClick={() => handleOAuthLogin("naver")}
+        onClick={() => handleOAuthLogin('naver')}
         type="button"
       />
     </div>
