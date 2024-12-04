@@ -20,7 +20,8 @@ export const createRoom = async (roomName) => {
 
 export const fetchRooms = async () => {
   try {
-    const response = await axios.get('http://localhost:8080/api/rooms', {
+    // const response = await axios.get('http://localhost:8080/api/rooms', {
+    const response = await axios.get(`http://52.78.186.21:8080/api/rooms`, {
       headers: {
         'Content-Type': 'text/event-stream;charset=utf-8',
       },
@@ -53,13 +54,15 @@ export const fetchRoomDetails = async (roomId) => {
   try {
     // 첫 번째 요청: room 데이터 가져오기
     const roomRes = await axios.get(
-      `http://localhost:8080/api/rooms/${roomId}`,
+      `http://52.78.186.21:8080/api/rooms/${roomId}`,
+      // `http://localhost:8080/api/rooms/${roomId}`,
       config
     );
 
     // 두 번째 요청: messages 데이터 가져오기
     const messagesRes = await axios.get(
-      `http://localhost:8080/api/rooms/${roomId}/messages`,
+      `http://52.78.186.21:8080/api/rooms/${roomId}/messages`,
+      // `http://localhost:8080/api/rooms/${roomId}/messages`,
       config
     );
 

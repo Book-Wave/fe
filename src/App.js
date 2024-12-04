@@ -16,8 +16,9 @@ export default function App() {
           <Route path="/register/*" element={<RegisterPage />} />
           <Route path="/kakao/callback" element={<CallbackPage />} />
           <Route path="/naver/callback" element={<CallbackPage />} />
-          <Route path="/chat/*" element={<ChatPage />} />
           <Route path="/" element={<LoginPage />} />
+          <Route path="/chat/*" element={<ChatPage />} />
+
         </Routes>
       </Router>
     </AuthProvider>
