@@ -1,3 +1,4 @@
+
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/register/*" element={<RegisterPage />} />
           <Route path="/kakao/callback" element={<CallbackPage />} />
           <Route path="/naver/callback" element={<CallbackPage />} />
+          <Route path="/chat/*" element={<ChatPage />} />
           <Route path="/" element={<LoginPage />} />
         </Routes>
       </Router>
