@@ -6,7 +6,7 @@ export const createRoom = async (roomName) => {
     const usertwo = ''; // usertwo는 공백으로 설정
 
     const response = await axios.post(
-      'http://localhost:8080/api/rooms', // API endpoint
+      'http://52.78.186.21:8080/book/chat/rooms', // API endpoint
       { roomName, userone, usertwo } // 요청 본문에 roomName, userone, usertwo 포함
     );
 
@@ -21,11 +21,14 @@ export const createRoom = async (roomName) => {
 export const fetchRooms = async () => {
   try {
     // const response = await axios.get('http://localhost:8080/api/rooms', {
-    const response = await axios.get(`http://52.78.186.21:8080/api/rooms`, {
-      headers: {
-        'Content-Type': 'text/event-stream;charset=utf-8',
-      },
-    }); // 채팅방 목록 API 호출
+    const response = await axios.get(
+      `http://52.78.186.21:8080/book/chat/rooms`,
+      {
+        headers: {
+          'Content-Type': 'text/event-stream;charset=utf-8',
+        },
+      }
+    ); // 채팅방 목록 API 호출
     // 응답 상태가 200일 때만 처리
     if (response.status === 200) {
       // 만약 response.data가 배열이 아니라면 빈 배열로 처리
@@ -54,14 +57,14 @@ export const fetchRoomDetails = async (roomId) => {
   try {
     // 첫 번째 요청: room 데이터 가져오기
     const roomRes = await axios.get(
-      `http://52.78.186.21:8080/api/rooms/${roomId}`,
+      `http://52.78.186.21:8080/book/chat/${roomId}`,
       // `http://localhost:8080/api/rooms/${roomId}`,
       config
     );
 
     // 두 번째 요청: messages 데이터 가져오기
     const messagesRes = await axios.get(
-      `http://52.78.186.21:8080/api/rooms/${roomId}/messages`,
+      `http://52.78.186.21:8080/book/chat/${roomId}/messages`,
       // `http://localhost:8080/api/rooms/${roomId}/messages`,
       config
     );
