@@ -8,20 +8,22 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [authToken, setAuthToken] = useState(localStorage.getItem("authToken"));
+  const [access_token, setAuthToken] = useState(
+    localStorage.getItem("access_token")
+  );
 
   const login = (token) => {
-    localStorage.setItem("authToken", token); // 로컬 스토리지에 JWT 저장
+    localStorage.setItem("access_token", token); // 로컬 스토리지에 JWT 저장
     setAuthToken(token); // 상태 업데이트
   };
 
   const logout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("access_token");
     setAuthToken(null); // 상태 업데이트
   };
 
   return (
-    <AuthContext.Provider value={{ authToken, login, logout }}>
+    <AuthContext.Provider value={{ access_token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
