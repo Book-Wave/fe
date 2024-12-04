@@ -1,13 +1,12 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashBoard';
-import CallbackPage from './pages/CallBack';
-import RegisterPage from './pages/RegisterPage';
-import ChatPage from './pages/ChatPage';
 
-const App = () => {
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashBoard";
+import CallbackPage from "./pages/CallBack";
+import RegisterPage from "./pages/RegisterPage";
+export default function App() {
   return (
     <AuthProvider>
       <Router>
@@ -17,12 +16,11 @@ const App = () => {
           <Route path="/register/*" element={<RegisterPage />} />
           <Route path="/kakao/callback" element={<CallbackPage />} />
           <Route path="/naver/callback" element={<CallbackPage />} />
-          <Route path="/chat/*" element={<ChatPage />} />
           <Route path="/" element={<LoginPage />} />
+          <Route path="/chat/*" element={<ChatPage />} />
+
         </Routes>
       </Router>
     </AuthProvider>
   );
-};
-
-export default App;
+}

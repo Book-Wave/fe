@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "./common/Button";
@@ -33,7 +34,6 @@ const LoginForm = () => {
   };
 
   return (
-    <>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
@@ -104,7 +104,6 @@ const LoginForm = () => {
           </p>
         </form>
       </div>
-    </>
   );
 };
 
