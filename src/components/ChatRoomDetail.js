@@ -34,7 +34,8 @@ const ChatRoomDetail = () => {
     console.log('WebSocket 연결 시도...');
 
     client.current = new Client({
-      brokerURL: 'ws://localhost:8080/ws',
+      // brokerURL: 'ws://localhost:8080/ws',
+      brokerURL: `ws://52.78.186.21:8080/ws`,
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
