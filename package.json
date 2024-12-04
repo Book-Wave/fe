@@ -23,7 +23,7 @@
     "web-vitals": "^2.1.4"
     "react-tailwindcss-datepicker": "^1.7.2",
     "web-vitals": "^2.1.4",
-    "dayjs": "^1.11.6",
+    "dayjs": "^1.11.6"
   },
   "scripts": {
     "start": "react-scripts start",
