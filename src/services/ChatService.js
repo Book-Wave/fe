@@ -25,7 +25,7 @@ export const fetchRooms = async () => {
       `http://52.78.186.21:8080/book/chat/rooms`,
       {
         headers: {
-          'Content-Type': 'text/event-stream;charset=utf-8',
+          'Content-Type': 'application/json',
         },
       }
     ); // 채팅방 목록 API 호출
