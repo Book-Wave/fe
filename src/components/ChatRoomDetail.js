@@ -1,7 +1,3 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Client } from '@stomp/stompjs';
-import { fetchRoomDetails } from '../services/ChatService';
-
 const ChatRoomDetail = () => {
   const [room, setRoom] = useState({});
   const [messages, setMessages] = useState([]);
@@ -10,17 +6,17 @@ const ChatRoomDetail = () => {
 
   const roomId = localStorage.getItem('wschat.roomId');
 
-  console.log('RoomId from URL:', roomId);
-
   const subscribe = useCallback(() => {
     if (client.current) {
       if (client.current.subscribed) return;
 
       client.current.subscribe(`/sub/${roomId}`, ({ body }) => {
+        console.log('WebSocket 메시지 수신:', body);
         const newMessage = JSON.parse(body);
         setMessages((prevMessages) => {
           if (prevMessages.some((msg) => msg.id === newMessage.id)) {
-            return prevMessages; // 중복 메시지 방지
+            console.log('중복 메시지 감지:', newMessage);
+            return prevMessages;
           }
           return [...prevMessages, newMessage];
         });
@@ -30,11 +26,10 @@ const ChatRoomDetail = () => {
   }, [roomId]);
 
   const connect = useCallback(() => {
-    if (client.current && client.current.connected) return; // 이미 연결된 경우 종료
+    if (client.current && client.current.connected) return;
     console.log('WebSocket 연결 시도...');
 
     client.current = new Client({
-      // brokerURL: 'ws://localhost:8080/ws',
       brokerURL: `ws://52.78.186.21:8080/ws`,
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
@@ -44,11 +39,13 @@ const ChatRoomDetail = () => {
 
     client.current.onConnect = () => {
       console.log('WebSocket 연결 성공');
-      if (!client.current.subscribed) {
-        // 중복 구독 방지
-        client.current.subscribed = true;
-        subscribe();
-      }
+      subscribe();
+    };
+    client.current.onStompError = (frame) => {
+      console.error('STOMP 오류:', frame.headers['message'], frame.body);
+    };
+    client.current.onWebSocketClose = () => {
+      console.warn('WebSocket 연결이 종료되었습니다.');
     };
 
     client.current.activate();
@@ -57,11 +54,11 @@ const ChatRoomDetail = () => {
   const fetchRoomData = useCallback(async () => {
     try {
       const response = await fetchRoomDetails(roomId);
-      console.log('Room data:', response); // 응답 로그 찍기
+      console.log('Room data:', response);
       setRoom(response.room);
       setMessages(response.messages);
     } catch (error) {
-      console.error('채팅방 데이터를 가져오는 데 실패했습니다.', error); // 에러 로그 확인
+      console.error('채팅방 데이터를 가져오는 데 실패했습니다.', error);
     }
   }, [roomId]);
 
@@ -81,10 +78,8 @@ const ChatRoomDetail = () => {
         destination: '/pub/message',
         body: JSON.stringify({ roomId, sender, message, time: new Date() }),
       });
-      console.log(message);
+      console.log('보낸 메시지:', message);
       setMessage('');
-
-      fetchRoomData();
     }
   };
 
@@ -98,10 +93,16 @@ const ChatRoomDetail = () => {
       />
       <button onClick={sendMessage}>보내기</button>
       <ul>
-        {Array.isArray(messages) &&
+        {Array.isArray(messages) && messages.length > 0 ? (
           messages.map((msg, idx) => (
-            <li key={idx}>{`${msg.sender}: ${msg.message}`}</li>
-          ))}
+            <li key={idx}>
+              {msg.sender ? `${msg.sender}: ` : ''}
+              {msg.message || '내용 없음'}
+            </li>
+          ))
+        ) : (
+          <li>메시지가 없습니다.</li>
+        )}
       </ul>
     </div>
   );
