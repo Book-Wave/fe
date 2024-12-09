@@ -53,37 +53,53 @@ const ChatRoomList = ({ style }) => {
   };
 
   return (
-    <div style={style}>
-      <h3>채팅방 리스트</h3>
+    <div style={style} className="p-6 bg-white rounded-lg shadow-lg">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        채팅방 리스트
+      </h3>
+
       {/* 새 채팅방 생성 */}
-      <div className="input-group mb-3">
+      <div className="flex gap-2 mb-6">
         <input
           type="text"
-          className="form-control"
+          className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="채팅방 이름을 입력하세요"
           value={roomName}
           onChange={(e) => setRoomName(e.target.value)}
           onKeyUp={(e) => e.key === 'Enter' && handleCreateRoom()} // Enter 키 이벤트 처리
         />
-        <button className="btn btn-primary" onClick={handleCreateRoom}>
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          onClick={handleCreateRoom}
+        >
           채팅방 개설
         </button>
       </div>
 
       {/* 채팅방 목록 */}
-      <ul className="list-group">
+      <ul role="list" className="divide-y divide-gray-100">
         {rooms.length > 0 ? (
           rooms.map((room) => (
             <li
               key={room.roomId}
-              className="list-group-item list-group-item-action"
+              className="flex justify-between gap-x-6 py-5 cursor-pointer hover:bg-gray-50"
               onClick={() => enterRoom(room.roomId)}
             >
-              {room.roomname} {/* 안전한 데이터 렌더링 */}
+              <div className="min-w-0 flex-auto">
+                <p className="text-sm font-semibold text-gray-900">
+                  {room.roomname}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  생성자: {room.creator || '알 수 없음'}
+                </p>
+              </div>
+              <div className="hidden sm:flex sm:flex-col sm:items-end">
+                <p className="text-sm text-gray-900">{room.members || 0}명</p>
+              </div>
             </li>
           ))
         ) : (
-          <li className="list-group-item text-muted">
+          <li className="text-sm text-gray-500">
             채팅방이 없습니다. 새로 만들어보세요!
           </li>
         )}
