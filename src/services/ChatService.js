@@ -82,9 +82,9 @@ export const fetchRoomDetails = async (roomId) => {
 
     // 병렬로 Room과 Messages 데이터 가져오기
     const [roomRes, messagesRes] = await Promise.all([
-      axios.get(`http://52.78.186.21:8080/book/chat/${roomId}`, config),
+      axios.get(`http://52.78.186.21:8080/book/chat/rooms/${roomId}`, config),
       axios.get(
-        `http://52.78.186.21:8080/book/chat/${roomId}/messages`,
+        `http://52.78.186.21:8080/book/chat/rooms/${roomId}/messages`,
         config
       ),
     ]);
