@@ -1,3 +1,7 @@
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { Client } from '@stomp/stompjs';
+import { fetchRoomDetails } from '../services/ChatService'; // 정확한 경로로 수정
+
 const ChatRoomDetail = () => {
   const [room, setRoom] = useState({});
   const [messages, setMessages] = useState([]);
