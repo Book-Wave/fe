@@ -46,16 +46,14 @@ export const fetchRooms = async () => {
   }
 };
 
-// json 변환
 const parseMessages = (data) => {
   try {
-    // 데이터가 문자열 형태일 경우 JSON으로 변환 시도
-    if (typeof data === 'string') {
-      const parsed = JSON.parse(data);
-      return Array.isArray(parsed) ? parsed : [];
+    // 데이터가 이미 JSON 객체인 경우
+    if (Array.isArray(data)) {
+      return data;
     }
-    // 데이터가 이미 배열일 경우 그대로 반환
-    return Array.isArray(data) ? data : [];
+    console.warn('메시지 데이터가 예상과 다릅니다:', data);
+    return [];
   } catch (error) {
     console.error('메시지 데이터 파싱 실패:', error);
     return [];
@@ -73,6 +71,7 @@ export const fetchRoomDetails = async (roomId) => {
 
   const config = {
     headers: {
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
     params: { sender },
@@ -90,15 +89,17 @@ export const fetchRoomDetails = async (roomId) => {
       ),
     ]);
 
+    if (typeof messagesRes.data !== 'object') {
+      console.error('Messages API 응답이 HTML입니다:', messagesRes.data);
+      throw new Error('메시지 데이터가 유효하지 않습니다.');
+    }
+
     console.log('Room API 응답:', roomRes.status, roomRes.data);
     console.log('Messages API 응답:', messagesRes.status, messagesRes.data);
 
-    // 메시지 데이터를 변환
-    const messages = parseMessages(messagesRes.data);
-
     return {
       room: roomRes.data,
-      messages,
+      messages: parseMessages(messagesRes.data),
     };
   } catch (error) {
     console.error('API 요청 실패:', error.response || error);
