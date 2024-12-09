@@ -77,7 +77,7 @@ const ChatRoomList = ({ style }) => {
       </div>
 
       {/* 채팅방 목록 */}
-      <ul role="list" className="divide-y divide-gray-100">
+      <ul className="divide-y divide-gray-100">
         {rooms.length > 0 ? (
           rooms.map((room) => (
             <li
