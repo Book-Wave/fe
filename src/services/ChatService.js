@@ -72,7 +72,9 @@ export const fetchRoomDetails = async (roomId) => {
   }
 
   const config = {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      'Content-Type': 'application/json',
+    },
     params: { sender },
   };
 
