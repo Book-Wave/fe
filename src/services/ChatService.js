@@ -46,44 +46,60 @@ export const fetchRooms = async () => {
   }
 };
 
+// json 변환
+const parseMessages = (data) => {
+  try {
+    // 데이터가 문자열 형태일 경우 JSON으로 변환 시도
+    if (typeof data === 'string') {
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : [];
+    }
+    // 데이터가 이미 배열일 경우 그대로 반환
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('메시지 데이터 파싱 실패:', error);
+    return [];
+  }
+};
+
 export const fetchRoomDetails = async (roomId) => {
-  const token = localStorage.getItem('access_token'); // JWT 토큰 가져오기
+  const token = localStorage.getItem('access_token');
   const sender = localStorage.getItem('wschat.sender');
-  console.log('JWT 토큰:', token); // 토큰 확인
-  console.log('Sender:', sender); // Sender 값 확인
+
+  if (!token) {
+    console.error('JWT 토큰이 없습니다. 로그인이 필요합니다.');
+    throw new Error('JWT 토큰이 없습니다.');
+  }
 
   const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    params: {
-      sender: sender, // sender 값을 쿼리 파라미터로 추가
-    },
+    headers: { Authorization: `Bearer ${token}` },
+    params: { sender },
   };
 
   try {
-    console.log('Room ID:', roomId); // 요청하려는 Room ID 확인
+    console.log('Room ID:', roomId);
 
-    // 첫 번째 요청: room 데이터 가져오기
-    const roomRes = await axios.get(
-      `http://52.78.186.21:8080/book/chat/${roomId}`,
-      config
-    );
-    console.log('Room API 응답:', roomRes.status, roomRes.data); // room 데이터 응답 상태 및 내용
+    // 병렬로 Room과 Messages 데이터 가져오기
+    const [roomRes, messagesRes] = await Promise.all([
+      axios.get(`http://52.78.186.21:8080/book/chat/${roomId}`, config),
+      axios.get(
+        `http://52.78.186.21:8080/book/chat/${roomId}/messages`,
+        config
+      ),
+    ]);
 
-    // 두 번째 요청: messages 데이터 가져오기
-    const messagesRes = await axios.get(
-      `http://52.78.186.21:8080/book/chat/${roomId}/messages`,
-      config
-    );
-    console.log('Messages API 응답:', messagesRes.status, messagesRes.data); // messages 데이터 응답 상태 및 내용
+    console.log('Room API 응답:', roomRes.status, roomRes.data);
+    console.log('Messages API 응답:', messagesRes.status, messagesRes.data);
+
+    // 메시지 데이터를 변환
+    const messages = parseMessages(messagesRes.data);
 
     return {
       room: roomRes.data,
-      messages: messagesRes.data,
+      messages,
     };
   } catch (error) {
-    console.error('API 요청 실패 (fetchRoomDetails):', error.response || error); // 에러 로그 확인
-    throw error; // 에러를 다시 던져서 호출한 쪽에서 처리할 수 있도록 함
+    console.error('API 요청 실패:', error.response || error);
+    throw error;
   }
 };
