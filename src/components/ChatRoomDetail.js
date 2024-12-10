@@ -12,7 +12,7 @@ const ChatRoomDetail = () => {
   const roomId = localStorage.getItem('wschat.roomId');
   const sender = localStorage.getItem('wschat.sender');
 
-  //최신 메시지 스크롤 ref
+  // 최신 메시지 스크롤 ref
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -97,127 +97,98 @@ const ChatRoomDetail = () => {
   };
 
   return (
-    <div className="flex-1 p-2 sm:p-6 justify-between flex flex-col h-screen">
-      <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
-        <div className="relative flex items-center space-x-4">
-          <div className="relative">
-            <span className="absolute text-green-500 right-0 bottom-0">
-              <svg width="20" height="20">
-                <circle cx="8" cy="8" r="8" fill="currentColor"></circle>
-              </svg>
-            </span>
-            <img
-              src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3&w=144&h=144"
-              alt="profile"
-              className="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
-            />
-          </div>
-          <div className="flex flex-col leading-tight">
-            <div className="text-2xl mt-1 flex items-center">
-              <span className="text-gray-700 mr-3">
-                {room.name || '채팅방'}
-              </span>
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
+      <div className="w-1/4 bg-white border-r border-gray-300">
+        {/* Sidebar Header */}
+        <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white">
+          <h1 className="text-2xl font-semibold">Chat Web</h1>
+        </header>
+
+        {/* Contact List */}
+        <div className="overflow-y-auto h-screen p-3 mb-9 pb-20">
+          {room.users?.map((user, index) => (
+            <div
+              className="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md"
+              key={index}
+            >
+              <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
+                <img
+                  src={`https://placehold.co/200x/ffa8e4/ffffff.svg?text=${user.name.charAt(
+                    0
+                  )}&font=Lato`}
+                  alt="User Avatar"
+                  className="w-12 h-12 rounded-full"
+                />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold">{user.name}</h2>
+                <p className="text-gray-600">{user.lastMessage}</p>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
-      <div
-        id="messages"
-        className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
-      >
-        {messages.length > 0 ? (
-          messages.map((msg, idx) => (
-            <div key={idx} className="chat-message">
+
+      {/* Main Chat Area */}
+      <div className="flex-1">
+        {/* Chat Header */}
+        <header className="bg-white p-4 text-gray-700">
+          <h1 className="text-2xl font-semibold">{room.name}</h1>
+        </header>
+
+        {/* Chat Messages */}
+        <div className="h-screen overflow-y-auto p-4 pb-36">
+          {messages.map((msg, index) => (
+            <div
+              className={`flex mb-4 ${
+                msg.sender === sender ? 'justify-end' : ''
+              } cursor-pointer`}
+              key={index}
+            >
               <div
-                className={`flex items-end ${
-                  msg.sender === sender ? 'justify-end' : ''
-                }`}
+                className={`${
+                  msg.sender === sender
+                    ? 'bg-indigo-500 text-white'
+                    : 'bg-white'
+                } max-w-96 rounded-lg p-3 gap-3`}
               >
-                <div
-                  className={`flex flex-col space-y-2 text-xs max-w-xs mx-2 ${
-                    msg.sender === sender
-                      ? 'order-1 items-end'
-                      : 'order-2 items-start'
-                  }`}
-                >
-                  <div>
-                    <span
-                      className={`px-4 py-2 rounded-lg inline-block ${
-                        msg.sender === sender
-                          ? 'bg-blue-600 text-white rounded-br-none'
-                          : 'bg-gray-300 text-gray-600 rounded-bl-none'
-                      }`}
-                    >
-                      {msg.message || '내용 없음'}
-                    </span>
-                  </div>
-                </div>
+                <p>{msg.message}</p>
+              </div>
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center ml-2`}
+              >
                 <img
-                  src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=3&w=144&h=144"
-                  alt="profile"
-                  className="w-6 h-6 rounded-full order-1"
+                  src={`https://placehold.co/200x/${
+                    msg.sender === sender ? 'b7a8ff' : 'ffa8e4'
+                  }/ffffff.svg?text=${msg.sender.charAt(0)}&font=Lato`}
+                  alt="User Avatar"
+                  className="w-8 h-8 rounded-full"
                 />
               </div>
             </div>
-          ))
-        ) : (
-          <div>메시지가 없습니다.</div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-      <div className="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
-        <div className="relative flex">
-          <span className="absolute inset-y-0 flex items-center">
+          ))}
+          <div ref={messagesEndRef}></div>
+        </div>
+
+        {/* Chat Input */}
+        <footer className="bg-white border-t border-gray-300 p-4 absolute bottom-0 w-3/4">
+          <div className="flex items-center">
+            <input
+              type="text"
+              placeholder="메시지를 입력하세요..."
+              className="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
             <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-full h-12 w-12 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="h-6 w-6 text-gray-600"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                ></path>
-              </svg>
-            </button>
-          </span>
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="메시지를 입력하세요"
-            className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-12 bg-gray-200 rounded-md py-3"
-          />
-          <div className="absolute right-0 items-center inset-y-0 hidden sm:flex">
-            <button
-              type="button"
               onClick={sendMessage}
-              className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
+              className="bg-indigo-500 text-white px-4 py-2 ml-2 rounded-md focus:outline-none"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="h-6 w-6 text-gray-600"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                ></path>
-              </svg>
+              보내기
             </button>
           </div>
-        </div>
+        </footer>
       </div>
     </div>
   );
