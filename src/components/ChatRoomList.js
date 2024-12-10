@@ -50,19 +50,6 @@ const ChatRoomList = () => {
       {/* Sidebar Header */}
       <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white">
         <h1 className="text-2xl font-semibold">Chat Web</h1>
-        <div className="relative">
-          <button className="focus:outline-none">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-100"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-              <path d="M2 10a2 2 0 012-2h12a2 2 0 012 2 2 2 0 01-2 2H4a2 2 0 01-2-2z" />
-            </svg>
-          </button>
-        </div>
       </header>
 
       {/* 채팅방 생성 */}
@@ -97,7 +84,7 @@ const ChatRoomList = () => {
               <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
                 <img
                   src={`https://placehold.co/200x200/ffa8e4/ffffff?text=${room.roomname[0]}`}
-                  alt="User Avatar"
+                  alt="Room Avatar"
                   className="w-12 h-12 rounded-full"
                 />
               </div>
