@@ -97,16 +97,16 @@ const ChatRoomDetail = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-1/4 bg-white border-r border-gray-300">
+      <div className="w-1/4 bg-white border-r border-gray-300 p-4">
         {/* Sidebar Header */}
-        <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white">
+        <header className="flex justify-between items-center bg-indigo-600 text-white p-4 mb-6">
           <h1 className="text-2xl font-semibold">Chat Web</h1>
         </header>
 
         {/* Contact List */}
-        <div className="overflow-y-auto h-screen p-3 mb-9 pb-20">
+        <div className="overflow-y-auto h-[calc(100%-8rem)]">
           {room.users?.map((user, index) => (
             <div
               className="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md"
@@ -131,19 +131,19 @@ const ChatRoomDetail = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
         {/* Chat Header */}
-        <header className="bg-white p-4 text-gray-700">
+        <header className="bg-white p-4 border-b border-gray-300">
           <h1 className="text-2xl font-semibold">{room.name}</h1>
         </header>
 
         {/* Chat Messages */}
-        <div className="h-screen overflow-y-auto p-4 pb-36">
+        <div className="flex-1 overflow-y-auto p-4 pb-32">
           {messages.map((msg, index) => (
             <div
               className={`flex mb-4 ${
                 msg.sender === sender ? 'justify-end' : ''
-              } cursor-pointer`}
+              }`}
               key={index}
             >
               <div
@@ -151,7 +151,7 @@ const ChatRoomDetail = () => {
                   msg.sender === sender
                     ? 'bg-indigo-500 text-white'
                     : 'bg-white'
-                } max-w-96 rounded-lg p-3 gap-3`}
+                } max-w-[75%] rounded-lg p-3 gap-3`}
               >
                 <p>{msg.message}</p>
               </div>
@@ -172,7 +172,7 @@ const ChatRoomDetail = () => {
         </div>
 
         {/* Chat Input */}
-        <footer className="bg-white border-t border-gray-300 p-4 absolute bottom-0 w-3/4">
+        <footer className="bg-white p-4 border-t border-gray-300">
           <div className="flex items-center">
             <input
               type="text"
