@@ -82,6 +82,12 @@ const ChatRoomDetail = () => {
 
   const sendMessage = () => {
     if (client.current && client.current.connected && message.trim()) {
+      const newMessage = {
+        roomId,
+        sender,
+        message,
+        time: new Date(),
+      };
       client.current.publish({
         destination: '/pub/message',
         body: JSON.stringify({ roomId, sender, message, time: new Date() }),
