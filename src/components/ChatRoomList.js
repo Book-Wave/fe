@@ -46,34 +46,29 @@ const ChatRoomList = () => {
   };
 
   return (
-    <div className="w-1/4 bg-white border-r border-gray-300 h-screen">
-      {/* Sidebar Header */}
-      <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white">
+    <div className="flex flex-col h-full">
+      <header className="p-4 border-b border-gray-300 bg-indigo-600 text-white">
         <h1 className="text-2xl font-semibold">Chat Web</h1>
       </header>
 
-      {/* 채팅방 생성 */}
-      <div className="p-4">
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="채팅방 이름을 입력하세요"
-            value={roomName}
-            onChange={(e) => setRoomName(e.target.value)}
-            onKeyUp={(e) => e.key === 'Enter' && handleCreateRoom()}
-          />
-          <button
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            onClick={handleCreateRoom}
-          >
-            생성
-          </button>
-        </div>
+      <div className="p-4 flex gap-2">
+        <input
+          type="text"
+          className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="채팅방 이름을 입력하세요"
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+          onKeyUp={(e) => e.key === 'Enter' && handleCreateRoom()}
+        />
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          onClick={handleCreateRoom}
+        >
+          생성
+        </button>
       </div>
 
-      {/* 채팅방 목록 */}
-      <div className="overflow-y-auto h-[calc(100%-8rem)] p-3">
+      <div className="overflow-y-auto flex-grow p-3">
         {rooms.length > 0 ? (
           rooms.map((room) => (
             <div
