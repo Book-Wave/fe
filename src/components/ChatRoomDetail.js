@@ -23,9 +23,11 @@ const ChatRoomDetail = () => {
       client.current.subscribe(`/sub/${roomId}`, ({ body }) => {
         const newMessage = JSON.parse(body);
         setMessages((prevMessages) => {
-          if (messageIds.current.has(newMessage.id)) return prevMessages;
-          messageIds.current.add(newMessage.id);
-          return [...prevMessages, newMessage];
+          if (!messageIds.current.has(newMessage.id)) {
+            messageIds.current.add(newMessage.id);
+            return [...prevMessages, newMessage];
+          }
+          return prevMessages;
         });
       });
     }
