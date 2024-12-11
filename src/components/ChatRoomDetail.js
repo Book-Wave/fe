@@ -8,6 +8,7 @@ const ChatRoomDetail = () => {
   const [message, setMessage] = useState('');
   const client = useRef(null);
   const messagesEndRef = useRef(null);
+  const messageIds = useRef(new Set());
 
   const roomId = localStorage.getItem('wschat.roomId');
   const sender = localStorage.getItem('wschat.sender');
@@ -19,19 +20,14 @@ const ChatRoomDetail = () => {
 
   const subscribe = useCallback(() => {
     if (client.current) {
-      if (client.current.subscribed) return;
-
-      const messageIds = new Set(); // 중복 메시지 방지용
-
       client.current.subscribe(`/sub/${roomId}`, ({ body }) => {
         const newMessage = JSON.parse(body);
         setMessages((prevMessages) => {
-          if (messageIds.has(newMessage.id)) return prevMessages;
-          messageIds.add(newMessage.id);
+          if (messageIds.current.has(newMessage.id)) return prevMessages;
+          messageIds.current.add(newMessage.id);
           return [...prevMessages, newMessage];
         });
       });
-      client.current.subscribed = true;
     }
   }, [roomId]);
 
@@ -72,14 +68,11 @@ const ChatRoomDetail = () => {
     }
   }, [roomId]);
 
-  useEffect(() => {
+  uuseEffect(() => {
     fetchRoomData();
-  }, [roomId, fetchRoomData]);
-
-  useEffect(() => {
     connect();
     return () => client.current?.deactivate();
-  }, [roomId, connect]);
+  }, [roomId, fetchRoomData, connect]);
 
   useEffect(() => {
     scrollToBottom();
