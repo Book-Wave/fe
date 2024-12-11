@@ -87,7 +87,9 @@ const ChatRoomDetail = () => {
         body: JSON.stringify({ roomId, sender, message, time: new Date() }),
       });
       console.log('보낸 메시지:', message);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       setMessage('');
+      scrollToBottom();
     }
   };
 
