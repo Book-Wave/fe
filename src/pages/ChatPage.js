@@ -28,13 +28,14 @@ const ChatPage = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       {/* 채팅방 목록 */}
       <div
         style={{
           width: '300px',
           borderRight: '1px solid #ccc',
           padding: '10px',
+          overflowY: 'auto',
         }}
       >
         {loading ? <p>로딩 중...</p> : <ChatRoomList rooms={rooms} />}
@@ -44,9 +45,9 @@ const ChatPage = () => {
       <div
         style={{
           flexGrow: 1,
-          padding: '10px',
           display: 'flex',
           flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
         <Routes>
