@@ -68,7 +68,7 @@ const ChatRoomDetail = () => {
     }
   }, [roomId]);
 
-  uuseEffect(() => {
+  useEffect(() => {
     fetchRoomData();
     connect();
     return () => client.current?.deactivate();
