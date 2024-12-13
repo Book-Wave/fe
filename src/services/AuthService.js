@@ -52,7 +52,7 @@ export const sendEmail = async (email) => {
     const response = await axiosInstance.post(`/auth/email_send`, { email });
     return response;
   } catch (error) {
-    throw new Error("Failed to send email code");
+    throw new Error('Failed to send email code');
   }
 };
 
@@ -64,7 +64,7 @@ export const verifyCode = async (email, code) => {
     });
     return response;
   } catch (error) {
-    throw new Error("Failed to verify email code");
+    throw new Error('Failed to verify email code');
   }
 };
 
@@ -88,6 +88,6 @@ export const register = async (
     });
     return response;
   } catch (error) {
-    throw new Error("Failed to register member");
+    throw new Error('Failed to register member');
   }
 };

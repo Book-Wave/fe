@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "./common/Button";
@@ -5,8 +6,8 @@ import { loginHandler } from "../services/AuthService";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -21,13 +22,12 @@ const LoginForm = () => {
       alert("로그인 성공!");
       navigate("/dashboard");
     } catch (error) {
-      console.error("로그인 실패:", error);
-      alert("로그인 실패");
+      console.error('로그인 실패:', error);
+      alert('로그인 실패');
     }
   };
 
   return (
-    <>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
@@ -98,7 +98,6 @@ const LoginForm = () => {
           </p>
         </form>
       </div>
-    </>
   );
 };
 
