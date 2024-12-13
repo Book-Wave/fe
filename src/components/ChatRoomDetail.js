@@ -6,12 +6,19 @@ const ChatRoomDetail = () => {
   const [room, setRoom] = useState({});
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const [unreadMessages, setUnreadMessages] = useState(0); // 읽지 않은 메시지
   const client = useRef(null);
   const messagesEndRef = useRef(null);
   const messageIds = useRef(new Set());
 
   const roomId = localStorage.getItem('wschat.roomId');
   const sender = localStorage.getItem('wschat.sender');
+
+  // receiver 설정
+  const receiver = useMemo(() => {
+    const users = roomId.split('-'); // roomId를 분리
+    return users.find((user) => user !== sender); // sender가 아닌 사용자를 receiver로 설정
+  }, [roomId, sender]);
 
   // 최신 메시지 스크롤 ref
   const scrollToBottom = () => {
@@ -22,6 +29,12 @@ const ChatRoomDetail = () => {
     if (client.current) {
       client.current.subscribe(`/sub/${roomId}`, ({ body }) => {
         const newMessage = JSON.parse(body);
+
+        // 읽지 않은 메시지 처리
+        if (newMessage.sender === receiver) {
+          setUnreadMessages((prev) => prev + 1);
+        }
+
         setMessages((prevMessages) => {
           if (!messageIds.current.has(newMessage.id)) {
             messageIds.current.add(newMessage.id);
@@ -31,7 +44,7 @@ const ChatRoomDetail = () => {
         });
       });
     }
-  }, [roomId]);
+  }, [roomId, receiver]);
 
   const connect = useCallback(() => {
     if (client.current && client.current.connected) return;
@@ -62,13 +75,28 @@ const ChatRoomDetail = () => {
   const fetchRoomData = useCallback(async () => {
     try {
       const response = await fetchRoomDetails(roomId);
-      console.log('Room data:', response);
       setRoom(response.room);
       setMessages(response.messages);
+
+      // 읽지 않은 메시지 업데이트
+      const unreadCount = response.messages.filter(
+        (msg) => msg.sender === receiver && !msg.read
+      ).length;
+      setUnreadMessages(unreadCount);
     } catch (error) {
       console.error('채팅방 데이터를 가져오는 데 실패했습니다.', error);
     }
-  }, [roomId]);
+  }, [roomId, receiver]);
+
+  // 읽음 처리
+  const markAsRead = useCallback(async () => {
+    try {
+      await markMessagesAsRead(roomId, sender);
+      setUnreadMessages(0); // 읽지 않은 메시지 초기화
+    } catch (error) {
+      console.error('읽음 처리 실패', error);
+    }
+  }, [roomId, sender]);
 
   useEffect(() => {
     fetchRoomData();
@@ -78,19 +106,27 @@ const ChatRoomDetail = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+    markAsRead(); // 메시지가 변경될 때 읽음 처리
+  }, [messages, markAsRead]);
 
   const sendMessage = () => {
     if (client.current && client.current.connected && message.trim()) {
       const newMessage = {
         roomId,
         sender,
+        receiver,
         message,
         time: new Date(),
       };
       client.current.publish({
         destination: '/pub/message',
-        body: JSON.stringify({ roomId, sender, message, time: new Date() }),
+        body: JSON.stringify({
+          roomId,
+          sender,
+          receiver,
+          message,
+          time: new Date(),
+        }),
       });
       console.log('보낸 메시지:', message);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -119,6 +155,9 @@ const ChatRoomDetail = () => {
               } max-w-[75%] rounded-lg p-3 mb-2`}
             >
               {msg.message}
+              <div className="text-xs text-gray-500 mt-1">
+                {new Date(msg.time).toLocaleString()}
+              </div>
             </div>
           </div>
         ))}
