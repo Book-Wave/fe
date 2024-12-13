@@ -2,11 +2,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "./common/Button";
-import axios from "axios";
+import { loginHandler } from "../services/AuthService";
 import { useNavigate } from "react-router-dom";
-
-const api = "http://52.78.186.21:8080/book";
-// const api = "http://localhost:8080/book";
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -17,16 +14,13 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${api}/auth/login`, {
-        email,
-        password,
-      });
-
+      const response = await loginHandler(email, password);
       // JWT 토큰을 로컬 스토리지에 저장
-      localStorage.setItem('access_token', response.data.access_token);
-      localStorage.setItem('refresh_token', response.data.refresh_token);
-      alert('로그인 성공!');
-      navigate('/dashboard');
+      const access_token = response.headers["authorization"]?.split(" ")[1];
+      console.log(response);
+      localStorage.setItem("access_token", access_token);
+      alert("로그인 성공!");
+      navigate("/dashboard");
     } catch (error) {
       console.error('로그인 실패:', error);
       alert('로그인 실패');
