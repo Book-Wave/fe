@@ -1,4 +1,3 @@
-// ./src/pages/DashboardPage.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { whoami } from "../services/AuthService";
@@ -19,7 +18,7 @@ const DashboardPage = () => {
 
     const fetchUserData = async () => {
       try {
-        const response = await whoami(token);
+        const response = await whoami();
         setUser(response.data);
         setLoading(false);
       } catch (error) {
@@ -44,7 +43,7 @@ const DashboardPage = () => {
       <h2>대시보드</h2>
       {user ? (
         <div>
-          <h3>환영합니다, {user.name}님!</h3>
+          <h3>환영합니다, {user.nickname}님!</h3>
           <p>Email: {user.email}</p>
           <p>Hertz: {user.hertz}</p>
         </div>
