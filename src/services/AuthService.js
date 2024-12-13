@@ -1,100 +1,55 @@
-import axios from "axios";
-import {
-  getAccessToken,
-  getRefreshToken,
-  setAccessToken,
-} from "../utils/TokenUtil";
+// import axios from "axios";
+import axiosInstance from "./AxiosInstance";
+// const api = axios.create({
+//   baseURL: "http://52.78.186.21:8080/book",
+//   // baseURL: "http://localhost:8080/book",
+//   withCredentials: true,
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+// });
 
-const api = axios.create({
-  baseURL: "http://52.78.186.21:8080/book",
-  // baseURL: "http://localhost:8080/book",
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+export const loginHandler = async (email, password) => {
+  const response = await axiosInstance.post("/auth/login", { email, password });
+  return response;
+};
 
 export const kakaoCallback = async (code) => {
-  const response = await api.get("/auth/kakao/callback", {
+  const response = await axiosInstance.get("/auth/kakao/callback", {
     params: { code },
   });
   return response.data;
 };
 
 export const naverCallback = async (code, state) => {
-  const response = await api.get("/auth/naver/callback", {
+  const response = await axiosInstance.get("/auth/naver/callback", {
     params: { code, state },
   });
   return response.data;
 };
 
 export const registerOAuth = async (nickname, birthdate, gender) => {
-  const response = await api.post(
-    "/auth/social/new",
-    {
-      nickname,
-      birthdate,
-      gender,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await axiosInstance.post("/auth/social/new", {
+    nickname,
+    birthdate,
+    gender,
+  });
   return response.data;
 };
 
 export const checkNicknameDuplicate = async (nickname) => {
-  const response = await api.get(`/auth/nickname/check/${nickname}`);
+  const response = await axiosInstance.get(`/auth/nickname/check/${nickname}`);
   return response.data; // true (중복 없음), false (중복 있음)
 };
 
 export const whoami = async () => {
-  const access_token = getAccessToken();
-  const refresh_token = getRefreshToken();
-
-  try {
-    const response = await api.get(`/member/me`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-      withCredentials: true,
-    });
-    return response;
-  } catch (error) {
-    if (error.response?.status === 401 && refresh_token) {
-      try {
-        console.log("Access token expired. Attempting refresh ~~");
-        const refreshResponse = await api.post(`/auth/refresh`, null, {
-          headers: {
-            Authorization: `Bearer ${refresh_token}`,
-          },
-        });
-        const new_access_token = refreshResponse.data.token;
-        setAccessToken(new_access_token);
-
-        const retryResponse = await api.get(`/member/me`, {
-          headers: {
-            Authorization: `Bearer ${new_access_token}`,
-          },
-          withCredentials: true,
-        });
-        return retryResponse;
-      } catch (refreshError) {
-        console.error("Failed to refresh access token:", refreshError);
-        throw new Error("Failed to refresh access token. Please log in again.");
-      }
-    }
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch user info"
-    );
-  }
+  const response = await axiosInstance.get(`/member/me`);
+  return response;
 };
 
 export const sendEmail = async (email) => {
   try {
-    const response = await api.post(`/auth/email_send`, { email });
+    const response = await axiosInstance.post(`/auth/email_send`, { email });
     return response;
   } catch (error) {
     throw new Error("Failed to send email code");
@@ -103,7 +58,10 @@ export const sendEmail = async (email) => {
 
 export const verifyCode = async (email, code) => {
   try {
-    const response = await api.post(`auth/email_verify`, { email, code });
+    const response = await axiosInstance.post(`auth/email_verify`, {
+      email,
+      code,
+    });
     return response;
   } catch (error) {
     throw new Error("Failed to verify email code");
@@ -120,7 +78,7 @@ export const register = async (
   gender
 ) => {
   try {
-    const response = await api.post(`auth/register`, {
+    const response = await axiosInstance.post(`auth/register`, {
       email,
       password,
       name,
