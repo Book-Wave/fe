@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerOAuth, checkNicknameDuplicate } from "../services/AuthService";
-import Button from "./common/Button";
+import {
+  registerOAuth,
+  checkNicknameDuplicate,
+} from "../../services/AuthService";
+import Button from "../common/Button";
 
 const NewUserForm = () => {
   const [formData, setFormData] = useState({

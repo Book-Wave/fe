@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { whoami } from "../services/AuthService";
+import { getAccessToken } from "../utils/TokenUtil";
 
 const DashboardPage = () => {
   const [user, setUser] = useState(null);
@@ -9,7 +10,8 @@ const DashboardPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
+    // const token = localStorage.getItem("access_token");
+    const token = getAccessToken();
 
     if (!token) {
       navigate("/login");

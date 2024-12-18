@@ -24,6 +24,11 @@ export const naverCallback = async (code, state) => {
   return response;
 };
 
+export const handleLogout = async () => {
+  const response = await axiosInstance.post("/auth/logout");
+  return response;
+};
+
 export const registerOAuth = async (nickname, birthdate, gender) => {
   const response = await axiosInstance.post("/auth/social/new", {
     nickname,

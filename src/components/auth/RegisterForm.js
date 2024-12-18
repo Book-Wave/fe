@@ -4,8 +4,8 @@ import {
   verifyCode,
   register,
   checkNicknameDuplicate,
-} from "../services/AuthService";
-import Button from "./common/Button";
+} from "../../services/AuthService";
+import Button from "../common/Button";
 
 const Register = () => {
   const [email, setEmail] = useState("");

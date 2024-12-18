@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogPanel,
@@ -24,6 +25,9 @@ import {
   PhoneIcon,
   PlayCircleIcon,
 } from "@heroicons/react/20/solid";
+import { AuthContext } from "../../context/AuthContext";
+import { handleLogout } from "../../services/AuthService";
+import { removeAccessToken } from "../../utils/TokenUtil";
 
 const products = [
   {
@@ -62,8 +66,20 @@ const callsToAction = [
   { name: "Contact sales", href: "#", icon: PhoneIcon },
 ];
 
-export default function Example() {
+export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const logout = async () => {
+    try {
+      await handleLogout();
+      setIsLoggedIn(false);
+      removeAccessToken();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <header className="bg-white">
@@ -159,9 +175,21 @@ export default function Example() {
           </a>
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <a href="/" className="text-sm/6 font-semibold text-gray-900">
-            Log in <span aria-hidden="true">&rarr;</span>
-          </a>
+          {isLoggedIn ? (
+            <div className="text-sm/6 font-semibold text-gray-900">
+              {/* <span>{userNickname}님 반갑습니다.</span> */}
+              <button
+                onClick={logout}
+                className="ml-4 text-gray-900 hover:text-indigo-600"
+              >
+                Log out
+              </button>
+            </div>
+          ) : (
+            <a href="/" className="text-sm/6 font-semibold text-gray-900">
+              Log in
+            </a>
+          )}
         </div>
       </nav>
       <Dialog

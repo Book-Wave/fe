@@ -1,6 +1,6 @@
 import React from "react";
-import Button from "./common/Button";
-import { handleOAuthLogin } from "../services/AuthService";
+import Button from "../common/Button";
+import { handleOAuthLogin } from "../../services/AuthService";
 
 function OAuthLoginForm() {
   return (
