@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  // baseURL: 'http://52.78.186.21:8080/book',
-  baseURL: 'http://localhost:8080/book',
+  baseURL: 'http://52.78.186.21:8080/book',
+  // baseURL: "http://localhost:8080/book",
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -12,9 +12,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Redux 상태에서 access token 가져오기
-    // const state = store.getState();
-    // const accessToken = state.auth.accessToken;
     const access_token = localStorage.getItem('access_token');
 
     if (access_token) {
@@ -37,8 +34,8 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const response = await axios.post(
-          'http://localhost:8080/book/auth/refresh',
-          // 'http://52.78.186.21:8080/book/auth/refresh',
+          // "http://localhost:8080/book/auth/refresh",
+          'http://52.78.186.21:8080/book/auth/refresh',
           {},
           { withCredentials: true }
         );

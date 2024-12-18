@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Button from './common/Button';
 import { loginHandler } from '../services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -58,12 +59,12 @@ const LoginForm = () => {
               Password
             </label>
             <div className="text-sm">
-              <a
-                href="/"
+              <Link
+                to="/resetting"
                 className="font-semibold text-[#0080FF] hover:text-[#0000FF]"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
           </div>
           <div className="mt-2">

@@ -1,31 +1,27 @@
-// import axios from "axios";
 import axiosInstance from './AxiosInstance';
-// const api = axios.create({
-//   baseURL: "http://52.78.186.21:8080/book",
-//   // baseURL: "http://localhost:8080/book",
-//   withCredentials: true,
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-// });
 
 export const loginHandler = async (email, password) => {
   const response = await axiosInstance.post('/auth/login', { email, password });
   return response;
 };
 
+export const handleOAuthLogin = async (provider) => {
+  console.log(axiosInstance.defaults.baseURL);
+  window.location.href = `${axiosInstance.defaults.baseURL}/auth/${provider}/login`;
+};
+
 export const kakaoCallback = async (code) => {
   const response = await axiosInstance.get('/auth/kakao/callback', {
     params: { code },
   });
-  return response.data;
+  return response;
 };
 
 export const naverCallback = async (code, state) => {
   const response = await axiosInstance.get('/auth/naver/callback', {
     params: { code, state },
   });
-  return response.data;
+  return response;
 };
 
 export const registerOAuth = async (nickname, birthdate, gender) => {
@@ -68,7 +64,6 @@ export const verifyCode = async (email, code) => {
   }
 };
 
-// eslint-disable-next-line no-restricted-globals
 export const register = async (
   email,
   password,
@@ -88,6 +83,19 @@ export const register = async (
     });
     return response;
   } catch (error) {
-    throw new Error('Failed to register member');
+    throw error;
+  }
+};
+
+export const resetting = async (email, password, confirm_password) => {
+  try {
+    const response = axiosInstance.put(`auth/reset`, {
+      email,
+      password,
+      confirm_password,
+    });
+    return response;
+  } catch (error) {
+    throw error;
   }
 };

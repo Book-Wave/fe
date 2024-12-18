@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { kakaoCallback, naverCallback } from '../services/AuthService'; // api.js에서 함수 가져오기
+import { kakaoCallback, naverCallback } from '../../services/AuthService'; // api.js에서 함수 가져오기
 
 const OAuthCallback = () => {
   const location = useLocation();
@@ -15,10 +15,8 @@ const OAuthCallback = () => {
     if (code && !isCallbackHandled.current) {
       isCallbackHandled.current = true; // 첫 번째 실행 후 상태 변경
       if (pathname.includes('kakao')) {
-        console.log(origin);
         handleKakaoCallback(code);
       } else if (pathname.includes('naver')) {
-        console.log(origin);
         const state = queryParams.get('state');
         handleNaverCallback(code, state);
       } else {
@@ -31,10 +29,12 @@ const OAuthCallback = () => {
   const handleKakaoCallback = async (code) => {
     try {
       const response = await kakaoCallback(code);
-      if (response.new_user) {
+      if (response.data === 'new') {
         navigate('/register/oauth');
       } else {
-        localStorage.setItem('access_token', response.access_token);
+        const access_token = response.headers['authorization']?.split(' ')[1];
+        console.log(response);
+        localStorage.setItem('access_token', access_token);
         navigate('/dashboard');
       }
     } catch (error) {
@@ -46,11 +46,12 @@ const OAuthCallback = () => {
   const handleNaverCallback = async (code, state) => {
     try {
       const response = await naverCallback(code, state);
-      if (response.new_user) {
+      if (response.data === 'new') {
         navigate('/register/oauth');
       } else {
-        localStorage.setItem('access_token', response.access_token);
-        localStorage.setItem('refresh_token', response.refresh_token);
+        const access_token = response.headers['authorization']?.split(' ')[1];
+        console.log(response);
+        localStorage.setItem('access_token', access_token);
         navigate('/dashboard');
       }
     } catch (error) {
