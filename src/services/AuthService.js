@@ -1,5 +1,5 @@
 // import axios from "axios";
-import axiosInstance from "./AxiosInstance";
+import axiosInstance from './AxiosInstance';
 // const api = axios.create({
 //   baseURL: "http://52.78.186.21:8080/book",
 //   // baseURL: "http://localhost:8080/book",
@@ -10,26 +10,26 @@ import axiosInstance from "./AxiosInstance";
 // });
 
 export const loginHandler = async (email, password) => {
-  const response = await axiosInstance.post("/auth/login", { email, password });
+  const response = await axiosInstance.post('/auth/login', { email, password });
   return response;
 };
 
 export const kakaoCallback = async (code) => {
-  const response = await axiosInstance.get("/auth/kakao/callback", {
+  const response = await axiosInstance.get('/auth/kakao/callback', {
     params: { code },
   });
   return response.data;
 };
 
 export const naverCallback = async (code, state) => {
-  const response = await axiosInstance.get("/auth/naver/callback", {
+  const response = await axiosInstance.get('/auth/naver/callback', {
     params: { code, state },
   });
   return response.data;
 };
 
 export const registerOAuth = async (nickname, birthdate, gender) => {
-  const response = await axiosInstance.post("/auth/social/new", {
+  const response = await axiosInstance.post('/auth/social/new', {
     nickname,
     birthdate,
     gender,

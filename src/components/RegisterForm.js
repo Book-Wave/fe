@@ -1,34 +1,34 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   sendEmail,
   verifyCode,
   register,
   checkNicknameDuplicate,
-} from "../services/AuthService";
-import Button from "./common/Button";
+} from '../services/AuthService';
+import Button from './common/Button';
 
 const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [birthdate, setBirthdate] = useState("");
-  const [gender, setGender] = useState("0"); // 0 -> 여성, 1 -> 남성
-  const [verificationCode, setVerificationCode] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [birthdate, setBirthdate] = useState('');
+  const [gender, setGender] = useState('0'); // 0 -> 여성, 1 -> 남성
+  const [verificationCode, setVerificationCode] = useState('');
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
-  const [nicknameError, setNicknameError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [verificationError, setVerificationError] = useState("");
-  const [registrationError, setRegistrationError] = useState("");
+  const [nicknameError, setNicknameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [verificationError, setVerificationError] = useState('');
+  const [registrationError, setRegistrationError] = useState('');
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
 
   const handleNicknameChange = (e) => {
     const newNickname = e.target.value;
     setNickname(newNickname);
-    setNicknameError("");
+    setNicknameError('');
     setIsNicknameAvailable(false);
   };
 
@@ -37,14 +37,14 @@ const Register = () => {
     try {
       const isDuplicate = await checkNicknameDuplicate(nickname);
       if (!isDuplicate) {
-        setNicknameError("이 닉네임은 이미 사용 중입니다.");
+        setNicknameError('이 닉네임은 이미 사용 중입니다.');
         setIsNicknameAvailable(false);
       } else {
-        setNicknameError("사용가능한 닉네임입니다.");
+        setNicknameError('사용가능한 닉네임입니다.');
         setIsNicknameAvailable(true);
       }
     } catch (error) {
-      setNicknameError("닉네임 중복 체크에 실패했습니다.");
+      setNicknameError('닉네임 중복 체크에 실패했습니다.');
     }
   };
 
@@ -53,9 +53,9 @@ const Register = () => {
     try {
       const response = await sendEmail(email);
       console.log(response);
-      alert("이메일 인증 코드가 발송되었습니다.");
+      alert('이메일 인증 코드가 발송되었습니다.');
     } catch (error) {
-      setEmailError("이메일 인증 요청에 실패했습니다.");
+      setEmailError('이메일 인증 요청에 실패했습니다.');
     }
   };
 
@@ -66,27 +66,27 @@ const Register = () => {
 
       if (response.status === 200) {
         setIsEmailVerified(true);
-        alert("이메일 인증이 완료되었습니다.");
+        alert('이메일 인증이 완료되었습니다.');
       }
     } catch (error) {
-      setVerificationError("인증 코드가 잘못되었습니다.");
+      setVerificationError('인증 코드가 잘못되었습니다.');
     }
   };
 
   // 회원가입 처리
   const handleRegister = async () => {
     if (password !== confirmPassword) {
-      setPasswordError("비밀번호가 일치하지 않습니다.");
+      setPasswordError('비밀번호가 일치하지 않습니다.');
       return;
     }
 
     if (!isEmailVerified) {
-      alert("이메일 인증이 완료되지 않았습니다.");
+      alert('이메일 인증이 완료되지 않았습니다.');
       return;
     }
 
     if (!isNicknameAvailable) {
-      alert("닉네임이 중복되었습니다. 다른 닉네임을 선택해주세요.");
+      alert('닉네임이 중복되었습니다. 다른 닉네임을 선택해주세요.');
       return;
     }
 
@@ -100,10 +100,10 @@ const Register = () => {
         gender
       );
       console.log(response);
-      alert("회원가입이 완료되었습니다.");
-      navigator("/dashboard");
+      alert('회원가입이 완료되었습니다.');
+      navigator('/dashboard');
     } catch (error) {
-      setRegistrationError("회원가입 실패");
+      setRegistrationError('회원가입 실패');
     }
   };
 
@@ -269,7 +269,6 @@ const Register = () => {
         )}
       </div>
     </div>
-
   );
 };
 

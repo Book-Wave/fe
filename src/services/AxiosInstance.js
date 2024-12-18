@@ -1,12 +1,12 @@
 // axiosInstance.js
-import axios from "axios";
+import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: "http://52.78.186.21:8080/book",
-//   baseURL: "http://localhost:8080/book",
+  // baseURL: 'http://52.78.186.21:8080/book',
+  baseURL: 'http://localhost:8080/book',
   withCredentials: true,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -15,10 +15,10 @@ axiosInstance.interceptors.request.use(
     // Redux 상태에서 access token 가져오기
     // const state = store.getState();
     // const accessToken = state.auth.accessToken;
-    const access_token = localStorage.getItem("access_token");
+    const access_token = localStorage.getItem('access_token');
 
     if (access_token) {
-      config.headers["Authorization"] = `Bearer ${access_token}`;
+      config.headers['Authorization'] = `Bearer ${access_token}`;
     }
     return config;
   },
@@ -37,15 +37,15 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const response = await axios.post(
-        //   "http://localhost:8080/book/auth/refresh",
-          "http://52.78.186.21:8080/book/auth/refresh",
+          'http://localhost:8080/book/auth/refresh',
+          // 'http://52.78.186.21:8080/book/auth/refresh',
           {},
           { withCredentials: true }
         );
         const newAccessToken = response.data.token;
-        console.log("재발급 성공: ", newAccessToken);
+        console.log('재발급 성공: ', newAccessToken);
         // 새로운 access_token 저장
-        localStorage.setItem("access_token", newAccessToken);
+        localStorage.setItem('access_token', newAccessToken);
 
         // Authorization 헤더 갱신 후 요청 재시도
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -53,8 +53,8 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         if (refreshError.response?.status === 401) {
           // 모든 토큰 만료: 로그인 페이지로 이동
-          localStorage.removeItem("access_token");
-          window.location.href = "/login";
+          localStorage.removeItem('access_token');
+          window.location.href = '/login';
         }
         return Promise.reject(refreshError);
       }

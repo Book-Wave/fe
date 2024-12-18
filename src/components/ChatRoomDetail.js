@@ -1,29 +1,32 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Client } from '@stomp/stompjs';
-import { fetchRoomDetails } from '../services/ChatService'; // 정확한 경로로 수정
+import { fetchRoomDetails, markMessagesAsRead } from '../services/ChatService'; // 정확한 경로로 수정
+import { useParams } from 'react-router-dom';
 
 const ChatRoomDetail = () => {
-  const [room, setRoom] = useState({});
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [unreadMessages, setUnreadMessages] = useState(0); // 읽지 않은 메시지
   const client = useRef(null);
   const messagesEndRef = useRef(null);
   const messageIds = useRef(new Set());
+  const { roomId } = useParams();
 
-  const roomId = localStorage.getItem('wschat.roomId');
   const sender = localStorage.getItem('wschat.sender');
 
   // receiver 설정
-  const receiver = useMemo(() => {
-    const users = roomId.split('-'); // roomId를 분리
-    return users.find((user) => user !== sender); // sender가 아닌 사용자를 receiver로 설정
+  const [receiver, setReceiver] = useState(null);
+
+  useEffect(() => {
+    if (!roomId || !sender) return;
+    const users = roomId.split('-');
+    setReceiver(users.find((user) => user !== sender)); // sender가 아닌 유저 선택
   }, [roomId, sender]);
 
   // 최신 메시지 스크롤 ref
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
 
   const subscribe = useCallback(() => {
     if (client.current) {
@@ -42,61 +45,73 @@ const ChatRoomDetail = () => {
           }
           return prevMessages;
         });
+        scrollToBottom();
       });
     }
-  }, [roomId, receiver]);
+  }, [roomId, receiver, scrollToBottom]);
 
   const connect = useCallback(() => {
     if (client.current && client.current.connected) return;
     console.log('WebSocket 연결 시도...');
+    const token = localStorage.getItem('access_token');
+    console.log('사용 중인 토큰:', token);
 
     client.current = new Client({
-      brokerURL: `ws://52.78.186.21:8080/ws`,
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      debug: (str) => console.log(str),
+      webSocketFactory: () =>
+        new WebSocket('ws://localhost:8080/ws', ['token', token]),
+      debug: console.log,
+      onConnect: () => {
+        console.log('WebSocket 연결 성공');
+        subscribe();
+      },
+      onStompError: (frame) => {
+        console.error('STOMP 오류:', frame.headers['message'], frame.body);
+      },
+      onWebSocketClose: (event) => {
+        console.warn('WebSocket 연결 종료:', event.code, event.reason);
+      },
     });
-
-    client.current.onConnect = () => {
-      console.log('WebSocket 연결 성공');
-      subscribe();
-    };
-    client.current.onStompError = (frame) => {
-      console.error('STOMP 오류:', frame.headers['message'], frame.body);
-    };
-    client.current.onWebSocketClose = () => {
-      console.warn('WebSocket 연결이 종료되었습니다.');
-    };
 
     client.current.activate();
   }, [subscribe]);
 
   const fetchRoomData = useCallback(async () => {
     try {
-      const response = await fetchRoomDetails(roomId);
-      setRoom(response.room);
-      setMessages(response.messages);
-
-      // 읽지 않은 메시지 업데이트
-      const unreadCount = response.messages.filter(
-        (msg) => msg.sender === receiver && !msg.read
-      ).length;
-      setUnreadMessages(unreadCount);
+      const messages = await fetchRoomDetails(roomId);
+      if (Array.isArray(messages)) {
+        setMessages(messages);
+        const unreadCount = messages.filter(
+          (msg) => msg.sender === receiver && !msg.isRead
+        ).length;
+        setUnreadMessages(unreadCount);
+      } else {
+        console.error('예상치 못한 응답 형식:', messages);
+        setMessages([]);
+        setUnreadMessages(0);
+      }
     } catch (error) {
       console.error('채팅방 데이터를 가져오는 데 실패했습니다.', error);
+      setMessages([]);
+      setUnreadMessages(0);
     }
   }, [roomId, receiver]);
 
   // 읽음 처리
   const markAsRead = useCallback(async () => {
     try {
-      await markMessagesAsRead(roomId, sender);
-      setUnreadMessages(0); // 읽지 않은 메시지 초기화
+      // 상대방 메시지만 읽음 처리
+      const unreadMessageIds = messages
+        .filter((msg) => msg.sender === receiver && !msg.isRead)
+        .map((msg) => msg.messageId);
+
+      if (unreadMessageIds.length > 0) {
+        await markMessagesAsRead(roomId, unreadMessageIds, receiver);
+        setUnreadMessages(0); // 읽지 않은 메시지 초기화
+      }
     } catch (error) {
       console.error('읽음 처리 실패', error);
     }
-  }, [roomId, sender]);
+  }, [roomId, messages, receiver]);
 
   useEffect(() => {
     fetchRoomData();
@@ -107,7 +122,7 @@ const ChatRoomDetail = () => {
   useEffect(() => {
     scrollToBottom();
     markAsRead(); // 메시지가 변경될 때 읽음 처리
-  }, [messages, markAsRead]);
+  }, [messages, markAsRead, scrollToBottom]);
 
   const sendMessage = () => {
     if (client.current && client.current.connected && message.trim()) {
@@ -138,14 +153,19 @@ const ChatRoomDetail = () => {
   return (
     <div className="flex flex-col h-full">
       <header className="bg-white p-4 border-b border-gray-300">
-        <h1 className="text-2xl font-semibold">{room.name}</h1>
+        <h1 className="text-2xl font-semibold">
+          {roomId || '채팅방'}
+          {unreadMessages > 0 && (
+            <span className="ml-2 text-red-500">({unreadMessages})</span>
+          )}
+        </h1>
       </header>
 
       <div className="flex-1 overflow-y-auto p-4 pb-32">
-        {messages.map((msg, index) => (
+        {messages.map((msg) => (
           <div
+            key={msg.messageId}
             className={`flex ${msg.sender === sender ? 'justify-end' : ''}`}
-            key={index}
           >
             <div
               className={`${
@@ -154,6 +174,9 @@ const ChatRoomDetail = () => {
                   : 'bg-gray-100 text-black'
               } max-w-[75%] rounded-lg p-3 mb-2`}
             >
+              {msg.sender !== sender && (
+                <div className="text-xs text-gray-500 mb-1">{receiver}</div>
+              )}
               {msg.message}
               <div className="text-xs text-gray-500 mt-1">
                 {new Date(msg.time).toLocaleString()}
