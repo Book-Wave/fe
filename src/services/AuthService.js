@@ -1,7 +1,7 @@
-import axiosInstance from "./AxiosInstance";
+import axiosInstance from './AxiosInstance';
 
 export const loginHandler = async (email, password) => {
-  const response = await axiosInstance.post("/auth/login", { email, password });
+  const response = await axiosInstance.post('/auth/login', { email, password });
   return response;
 };
 
@@ -11,21 +11,21 @@ export const handleOAuthLogin = async (provider) => {
 };
 
 export const kakaoCallback = async (code) => {
-  const response = await axiosInstance.get("/auth/kakao/callback", {
+  const response = await axiosInstance.get('/auth/kakao/callback', {
     params: { code },
   });
   return response;
 };
 
 export const naverCallback = async (code, state) => {
-  const response = await axiosInstance.get("/auth/naver/callback", {
+  const response = await axiosInstance.get('/auth/naver/callback', {
     params: { code, state },
   });
   return response;
 };
 
 export const registerOAuth = async (nickname, birthdate, gender) => {
-  const response = await axiosInstance.post("/auth/social/new", {
+  const response = await axiosInstance.post('/auth/social/new', {
     nickname,
     birthdate,
     gender,
@@ -48,7 +48,7 @@ export const sendEmail = async (email) => {
     const response = await axiosInstance.post(`/auth/email_send`, { email });
     return response;
   } catch (error) {
-    throw new Error("Failed to send email code");
+    throw new Error('Failed to send email code');
   }
 };
 
@@ -60,7 +60,7 @@ export const verifyCode = async (email, code) => {
     });
     return response;
   } catch (error) {
-    throw new Error("Failed to verify email code");
+    throw new Error('Failed to verify email code');
   }
 };
 

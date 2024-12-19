@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Button from "./common/Button";
-import { loginHandler } from "../services/AuthService";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import Button from './common/Button';
+import { loginHandler } from '../services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -15,14 +15,14 @@ const LoginForm = () => {
     try {
       const response = await loginHandler(email, password);
       // JWT 토큰을 로컬 스토리지에 저장
-      const access_token = response.headers["authorization"]?.split(" ")[1];
+      const access_token = response.headers['authorization']?.split(' ')[1];
       console.log(response);
-      localStorage.setItem("access_token", access_token);
-      alert("로그인 성공!");
-      navigate("/dashboard");
+      localStorage.setItem('access_token', access_token);
+      alert('로그인 성공!');
+      navigate('/dashboard');
     } catch (error) {
-      console.error("로그인 실패:", error);
-      alert("로그인 실패");
+      console.error('로그인 실패:', error);
+      alert('로그인 실패');
     }
   };
 
@@ -87,7 +87,7 @@ const LoginForm = () => {
           </Button>
         </div>
         <p className="mt-10 text-center text-sm text-gray-500">
-          회원이 아니신가요?{" "}
+          회원이 아니신가요?{' '}
           <Link
             to="/register"
             className="font-semibold text-indigo-600 hover:text-indigo-500"

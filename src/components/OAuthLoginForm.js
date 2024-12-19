@@ -1,6 +1,6 @@
-import React from "react";
-import Button from "./common/Button";
-import { handleOAuthLogin } from "../services/AuthService";
+import React from 'react';
+import Button from './common/Button';
+import { handleOAuthLogin } from '../services/AuthService';
 
 function OAuthLoginForm() {
   return (
@@ -9,7 +9,7 @@ function OAuthLoginForm() {
         <Button
           variant="outlined"
           className="oauth-button kakao flex items-center space-x-2"
-          onClick={() => handleOAuthLogin("kakao")}
+          onClick={() => handleOAuthLogin('kakao')}
         >
           <img src="/kakao.png" alt="카카오 아이콘" className="w-5 h-5" />
           <span>카카오 로그인</span>
@@ -17,7 +17,7 @@ function OAuthLoginForm() {
         <Button
           variant="outlined"
           className="oauth-button naver flex items-center space-x-2"
-          onClick={() => handleOAuthLogin("naver")}
+          onClick={() => handleOAuthLogin('naver')}
         >
           <img src="/naver.png" alt="네이버 아이콘" className="w-5 h-5" />
           <span>네이버 로그인</span>
