@@ -148,7 +148,7 @@ const ChatRoomDetail = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     markAsRead();
