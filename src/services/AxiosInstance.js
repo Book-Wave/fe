@@ -7,7 +7,7 @@ const axiosInstance = axios.create({
   baseURL: "http://localhost:8080/book",
   withCredentials: true,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -17,7 +17,7 @@ axiosInstance.interceptors.request.use(
     const access_token = getAccessToken();
 
     if (access_token) {
-      config.headers["Authorization"] = `Bearer ${access_token}`;
+      config.headers['Authorization'] = `Bearer ${access_token}`;
     }
     return config;
   },
@@ -42,7 +42,7 @@ axiosInstance.interceptors.response.use(
           { withCredentials: true }
         );
         const newAccessToken = response.data.token;
-        console.log("재발급 성공: ", newAccessToken);
+        console.log('재발급 성공: ', newAccessToken);
         // 새로운 access_token 저장
         // localStorage.setItem("access_token", newAccessToken);
         setAccessToken(newAccessToken);
@@ -53,8 +53,8 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         if (refreshError.response?.status === 401) {
           // 모든 토큰 만료: 로그인 페이지로 이동
-          localStorage.removeItem("access_token");
-          window.location.href = "/login";
+          localStorage.removeItem('access_token');
+          window.location.href = '/login';
         }
         return Promise.reject(refreshError);
       }

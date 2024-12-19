@@ -9,6 +9,10 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const goToChatPage = () => {
+    navigate("/chat"); // 원하는 페이지로 이동
+  };
+
   useEffect(() => {
     // const token = localStorage.getItem("access_token");
     const token = getAccessToken();
@@ -55,6 +59,9 @@ const DashboardPage = () => {
           <button onClick={() => navigate("/login")}>로그인</button>
         </div>
       )}
+      <div>
+        <button onClick={goToChatPage}>채팅방으로 이동</button>
+      </div>
     </div>
   );
 };

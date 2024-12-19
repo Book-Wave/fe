@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   sendEmail,
   verifyCode,
@@ -8,30 +8,30 @@ import {
 import Button from "../common/Button";
 
 const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [birthdate, setBirthdate] = useState("");
-  const [gender, setGender] = useState("0"); // 0 -> 여성, 1 -> 남성
-  const [verificationCode, setVerificationCode] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [birthdate, setBirthdate] = useState('');
+  const [gender, setGender] = useState('0'); // 0 -> 여성, 1 -> 남성
+  const [verificationCode, setVerificationCode] = useState('');
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
-  const [nicknameError, setNicknameError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [verificationError, setVerificationError] = useState("");
-  const [registrationError, setRegistrationError] = useState("");
+  const [nicknameError, setNicknameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [verificationError, setVerificationError] = useState('');
+  const [registrationError, setRegistrationError] = useState('');
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
 
-  const [passwordStrengthMessage, setPasswordStrengthMessage] = useState("");
-  const [passwordMatchMessage, setPasswordMatchMessage] = useState("");
+  const [passwordStrengthMessage, setPasswordStrengthMessage] = useState('');
+  const [passwordMatchMessage, setPasswordMatchMessage] = useState('');
 
   const handleNicknameChange = (e) => {
     const newNickname = e.target.value;
     setNickname(newNickname);
-    setNicknameError("");
+    setNicknameError('');
     setIsNicknameAvailable(false);
   };
 
@@ -40,25 +40,25 @@ const Register = () => {
     try {
       const isDuplicate = await checkNicknameDuplicate(nickname);
       if (!isDuplicate) {
-        setNicknameError("이 닉네임은 이미 사용 중입니다.");
+        setNicknameError('이 닉네임은 이미 사용 중입니다.');
         setIsNicknameAvailable(false);
       } else {
-        setNicknameError("사용가능한 닉네임입니다.");
+        setNicknameError('사용가능한 닉네임입니다.');
         setIsNicknameAvailable(true);
       }
     } catch (error) {
-      setNicknameError("닉네임 중복 체크에 실패했습니다.");
+      setNicknameError('닉네임 중복 체크에 실패했습니다.');
     }
   };
 
   // 이메일 인증 요청
   const handleEmailVerification = async () => {
     try {
-      alert("이메일 인증 코드가 발송되었습니다.");
+      alert('이메일 인증 코드가 발송되었습니다.');
       const response = await sendEmail(email);
       console.log(response);
     } catch (error) {
-      setEmailError("이메일 인증 요청에 실패했습니다.");
+      setEmailError('이메일 인증 요청에 실패했습니다.');
     }
   };
 
@@ -69,24 +69,24 @@ const Register = () => {
 
       if (response.status === 200) {
         setIsEmailVerified(true);
-        alert("이메일 인증이 완료되었습니다.");
+        alert('이메일 인증이 완료되었습니다.');
       }
     } catch (error) {
-      setVerificationError("인증 코드가 잘못되었습니다.");
+      setVerificationError('인증 코드가 잘못되었습니다.');
     }
   };
 
   // 비밀번호 제약조건 검사
   const checkPasswordStrength = (password) => {
     const pwPattern =
-      "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{8,}$";
+      '^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};\':"\\\\|,.<>\\/?]).{8,}$';
     const isValid = new RegExp(pwPattern).test(password);
 
     if (isValid) {
-      setPasswordStrengthMessage("모든 조건을 만족합니다.");
+      setPasswordStrengthMessage('모든 조건을 만족합니다.');
     } else {
       setPasswordStrengthMessage(
-        "비밀번호는 8자 이상, 알파벳, 숫자, 특수문자를 포함해야 합니다."
+        '비밀번호는 8자 이상, 알파벳, 숫자, 특수문자를 포함해야 합니다.'
       );
     }
 
@@ -104,9 +104,9 @@ const Register = () => {
     setConfirmPassword(newConfirmPassword);
 
     if (newConfirmPassword === password) {
-      setPasswordMatchMessage("비밀번호가 같습니다.");
+      setPasswordMatchMessage('비밀번호가 같습니다.');
     } else {
-      setPasswordMatchMessage("비밀번호가 다릅니다.");
+      setPasswordMatchMessage('비밀번호가 다릅니다.');
     }
   };
 
@@ -115,17 +115,17 @@ const Register = () => {
     e.preventDefault(); // 폼 제출 방지
 
     if (password !== confirmPassword) {
-      setPasswordError("비밀번호가 일치하지 않습니다.");
+      setPasswordError('비밀번호가 일치하지 않습니다.');
       return;
     }
 
     if (!isEmailVerified) {
-      alert("이메일 인증이 완료되지 않았습니다.");
+      alert('이메일 인증이 완료되지 않았습니다.');
       return;
     }
 
     if (!isNicknameAvailable) {
-      alert("닉네임이 중복되었습니다. 다른 닉네임을 선택해주세요.");
+      alert('닉네임이 중복되었습니다. 다른 닉네임을 선택해주세요.');
       return;
     }
 
@@ -143,13 +143,13 @@ const Register = () => {
         gender
       );
       console.log(response);
-      alert("회원가입이 완료되었습니다.");
-      navigator("/dashboard");
+      alert('회원가입이 완료되었습니다.');
+      navigator('/dashboard');
     } catch (error) {
       if (error.response && error.response.data) {
         setRegistrationError(error.response.data);
       } else {
-        setRegistrationError("회원가입 실패. 다시 시도해 주세요.");
+        setRegistrationError('회원가입 실패. 다시 시도해 주세요.');
       }
     }
   };
@@ -290,7 +290,7 @@ const Register = () => {
               type="radio"
               name="gender"
               value="0"
-              checked={gender === "0"}
+              checked={gender === '0'}
               onChange={(e) => setGender(e.target.value)}
             />
             <label className="ml-4 mr-2">남성</label>
@@ -298,7 +298,7 @@ const Register = () => {
               type="radio"
               name="gender"
               value="1"
-              checked={gender === "1"}
+              checked={gender === '1'}
               onChange={(e) => setGender(e.target.value)}
             />
           </div>
