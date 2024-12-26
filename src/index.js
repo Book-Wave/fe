@@ -1,17 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+// React 앱의 진입점 설정
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App"; // 전체 라우팅 설정 파일 가져오기
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+// React 앱을 DOM에 렌더링
+ReactDOM.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
+  document.getElementById("root") // 루트 엘리먼트에 렌더링
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
