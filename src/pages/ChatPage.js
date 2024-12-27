@@ -46,28 +46,14 @@ const ChatPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+    <div className="flex h-screen overflow-hidden">
       {/* 채팅방 목록 */}
-      <div
-        style={{
-          width: '300px',
-          borderRight: '1px solid #ccc',
-          padding: '10px',
-          overflowY: 'auto',
-        }}
-      >
+      <div className="w-1/3 border-r border-gray-300 p-4 overflow-y-auto">
         {loading ? <p>로딩 중...</p> : <ChatRoomList rooms={rooms} />}
       </div>
 
       {/* 채팅방 상세 */}
-      <div
-        style={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Routes>
           <Route path="/room/:roomId" element={<ChatRoomDetail />} />
         </Routes>
