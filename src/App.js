@@ -8,6 +8,7 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import ChatPage from "./pages/ChatPage";
 import MainLayout from "./pages/MainLayout";
 import ForgetPW from "./pages/auth/ForgetPW";
+import MyShop from "./pages/MyShop";
 
 const App = () => {
   return (
@@ -66,7 +67,7 @@ const App = () => {
             path="/"
             element={
               <MainLayout>
-                <LoginPage />
+                <DashboardPage />
               </MainLayout>
             }
           />
@@ -75,6 +76,14 @@ const App = () => {
             element={
               <MainLayout>
                 <ForgetPW />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/myshop"
+            element={
+              <MainLayout>
+                <MyShop />
               </MainLayout>
             }
           />

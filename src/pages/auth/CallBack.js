@@ -1,12 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { kakaoCallback, naverCallback } from '../../services/AuthService'; // api.js에서 함수 가져오기
+import { useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { kakaoCallback, naverCallback } from "../../services/AuthService"; // api.js에서 함수 가져오기
+import { setAccessToken } from "../../utils/TokenUtil";
+import { useAuth } from "../../context/AuthContext";
 
 const OAuthCallback = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isCallbackHandled = useRef(false); // 한 번만 실행되도록 하는 ref
-
+  const { setIsLoggedIn } = useAuth();
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const code = queryParams.get('code');
@@ -34,8 +36,10 @@ const OAuthCallback = () => {
       } else {
         const access_token = response.headers['authorization']?.split(' ')[1];
         console.log(response);
-        localStorage.setItem('access_token', access_token);
-        navigate('/dashboard');
+        setAccessToken(access_token);
+        setIsLoggedIn(true);
+        // localStorage.setItem("access_token", access_token);
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error('로그인 처리 실패:', error);
@@ -51,8 +55,10 @@ const OAuthCallback = () => {
       } else {
         const access_token = response.headers['authorization']?.split(' ')[1];
         console.log(response);
-        localStorage.setItem('access_token', access_token);
-        navigate('/dashboard');
+        setAccessToken(access_token);
+        setIsLoggedIn(true);
+        // localStorage.setItem("access_token", access_token);
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error('네이버 로그인 처리 실패:', error);
