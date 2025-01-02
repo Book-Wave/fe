@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { getItemDetail } from "../services/ItemService";
 
@@ -6,18 +6,18 @@ function ItemDetail() {
   const { itemId } = useParams();
   const [item, setItem] = useState(null);
 
-  const fetchItemDetail = async () => {
+  const fetchItemDetail = useCallback(async () => {
     try {
       const response = await getItemDetail(itemId);
       setItem(response.data);
     } catch (error) {
       console.error("상품 상세 정보 불러오기 실패:", error);
     }
-  };
+  }, [itemId]);
 
   useEffect(() => {
     fetchItemDetail();
-  }, [itemId,fetchItemDetail]);
+  }, [fetchItemDetail]);
 
   if (!item) return <div>로딩 중...</div>;
 
