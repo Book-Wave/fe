@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { api } from "../services/api";
+import { getItemDetail } from "../services/ItemService";
 
 function ItemDetail() {
   const { itemId } = useParams();
@@ -8,7 +8,7 @@ function ItemDetail() {
 
   const fetchItemDetail = async () => {
     try {
-      const response = await api.getItemDetail(itemId);
+      const response = await getItemDetail(itemId);
       setItem(response.data);
     } catch (error) {
       console.error("상품 상세 정보 불러오기 실패:", error);

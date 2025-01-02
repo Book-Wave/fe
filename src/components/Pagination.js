@@ -1,39 +1,35 @@
-// 페이지네이션 컴포넌트
 import React from "react";
 
-function Pagination({ currentPage, totalPages, onPageChange }) {
-  return (
-    <div>
-      {/* 이전 페이지 버튼 */}
-      <button
-        disabled={currentPage === 1} // 첫 페이지에서는 비활성화
-        onClick={() => onPageChange(currentPage - 1)}
-      >
-        이전
-      </button>
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  // 버튼 클릭 이벤트 핸들러
+  const handleClick = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      onPageChange(page); // 유효한 페이지 번호일 경우 페이지 변경
+    }
+  };
 
-      {/* 페이지 번호 리스트 */}
-      {[...Array(totalPages).keys()].map((num) => (
+  return (
+    <div className="pagination">
+      {/* 이전 버튼 */}
+      <button onClick={() => handleClick(currentPage - 1)} disabled={currentPage === 1}>
+        Previous
+      </button>
+      {/* 페이지 번호 버튼 */}
+      {[...Array(totalPages)].map((_, index) => (
         <button
-          key={num + 1} // 고유 키 설정
-          onClick={() => onPageChange(num + 1)} // 페이지 변경
-          style={{
-            fontWeight: num + 1 === currentPage ? "bold" : "normal", // 현재 페이지 강조
-          }}
+          key={index}
+          onClick={() => handleClick(index + 1)} // 클릭 시 해당 페이지로 이동
+          className={currentPage === index + 1 ? "active" : ""} // 현재 페이지 강조
         >
-          {num + 1}
+          {index + 1} {/* 페이지 번호 표시 */}
         </button>
       ))}
-
-      {/* 다음 페이지 버튼 */}
-      <button
-        disabled={currentPage === totalPages} // 마지막 페이지에서는 비활성화
-        onClick={() => onPageChange(currentPage + 1)}
-      >
-        다음
+      {/* 다음 버튼 */}
+      <button onClick={() => handleClick(currentPage + 1)} disabled={currentPage === totalPages}>
+        Next
       </button>
     </div>
   );
-}
+};
 
 export default Pagination;

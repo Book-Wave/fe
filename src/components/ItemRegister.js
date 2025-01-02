@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { api } from "../services/api";
+import { getCategories,registerItem } from "../services/ItemService";
 
 function ItemRegister() {
   const [categories, setCategories] = useState([]);
@@ -13,7 +13,7 @@ function ItemRegister() {
   // 카테고리 목록 불러오기
   useEffect(() => {
     const fetchCategories = async () => {
-      const response = await api.getCategories();
+      const response = await getCategories();
       setCategories(response);
     };
     fetchCategories();
@@ -30,7 +30,7 @@ function ItemRegister() {
   // 상품 등록
   const handleRegister = async () => {
     try {
-      await api.registerItem(formData);
+      await registerItem(formData);
       alert("상품 등록이 완료되었습니다!");
     } catch (error) {
       console.error("상품 등록 실패:", error);

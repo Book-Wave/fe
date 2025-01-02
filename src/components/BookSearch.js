@@ -1,44 +1,125 @@
-// 책 검색 API 호출 컴포넌트
 import React, { useState } from "react";
-import { api } from "../services/api"; // API 호출 함수 가져오기
+import { searchBooksFromApi } from "../services/ItemService";
 
-function BookSearch({ onBookSelect }) {
-  const [query, setQuery] = useState(""); // 검색어 상태
-  const [results, setResults] = useState([]); // 검색 결과 상태
+const BookSearch = ({ setBookInfo }) => {
+  const [query, setQuery] = useState("");
+  const [books, setBooks] = useState([]);
+  const [manualEntry, setManualEntry] = useState(false);
 
-  // 검색 API 호출
-  const handleSearch = async () => {
+  const searchBooks = async () => {
     try {
-      const response = await api.searchBooks(query); // API 호출
-      setResults(response.data); // 검색 결과 업데이트
+      const response = await searchBooksFromApi(query); // API 호출
+      const books = response.data || []; // 배열로 직접 처리
+      if (books.length === 0) {
+        alert("검색 결과가 없습니다.");
+      }
+      setBooks(books);
+      console.log("검색 결과:", books);
     } catch (error) {
-      console.error("책 검색 실패:", error); // 에러 처리
+      console.error("Error searching books:", error);
+      alert("책 검색 중 오류가 발생했습니다.");
     }
   };
 
-  return (
-    <div>
-      <h2>책 검색</h2>
-      {/* 검색 입력 필드 */}
-      <input
-        type="text"
-        value={query} // 검색어 입력
-        onChange={(e) => setQuery(e.target.value)} // 상태 업데이트
-        placeholder="검색어를 입력하세요"
-      />
-      <button onClick={handleSearch}>검색</button>
+  const handleManualEntry = () => {
+    setManualEntry(true);
+    setBookInfo(null);
+  };
 
-      {/* 검색 결과 리스트 */}
-      <ul>
-        {results.map((book, index) => (
-          <li key={index} onClick={() => onBookSelect(book)}>
-            <img src={book.image} alt={book.title} style={{ width: "50px" }} />
-            <strong>{book.title}</strong> - {book.author}
-          </li>
-        ))}
-      </ul>
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <h2>책 검색</h2>
+      <div style={{ display: "flex", marginBottom: "10px" }}>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="책 이름을 입력하세요"
+          style={{ flex: 1, padding: "8px" }}
+        />
+        <button
+          type="button"
+          onClick={searchBooks}
+          style={{ padding: "8px 16px" }}
+        >
+          검색
+        </button>
+      </div>
+
+      {books.length > 0 && (
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {books.map((book, index) => (
+            <li
+              key={index}
+              style={{
+                marginBottom: "10px",
+                border: "1px solid #ddd",
+                padding: "10px",
+              }}
+            >
+              <h4>{book.title}</h4>
+              <p>저자: {book.author}</p>
+              <p>출판사: {book.publisher}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setBookInfo({
+                    title: book.title,
+                    author: book.author,
+                    publisher: book.publisher,
+                    image: book.image,
+                    link: book.link,
+                    description: book.description,
+                    myPrice: "", // 가격은 사용자 입력으로 설정
+                    note: "", // 메모는 기본값으로 설정
+                  });
+                }}
+                style={{
+                  padding: "8px 16px",
+                  background: "#28a745",
+                  color: "#fff",
+                  border: "none",
+                }}
+              >
+                선택
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <button
+        type="button"
+        onClick={handleManualEntry}
+        style={{ padding: "8px 16px", marginTop: "10px" }}
+      >
+        직접 입력하기
+      </button>
+
+      {manualEntry && (
+        <div>
+          <h3>책 정보 직접 입력</h3>
+          <input
+            type="text"
+            placeholder="책 이름"
+            onChange={(e) =>
+              setBookInfo((prev) => ({ ...prev, title: e.target.value }))
+            }
+            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+          />
+          <input
+            type="text"
+            placeholder="저자"
+            onChange={(e) =>
+              setBookInfo((prev) => ({ ...prev, author: e.target.value }))
+            }
+            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+          />
+          {/* Add more fields as needed */}
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default BookSearch;

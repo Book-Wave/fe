@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { api } from "../services/api";
+import { getItemDetail,getCategories,updateItem } from "../services/ItemService";
 
 function ItemUpdate() {
   const { itemId } = useParams();
@@ -16,8 +16,8 @@ function ItemUpdate() {
   const fetchData = async () => {
     try {
       const [itemResponse, categoriesResponse] = await Promise.all([
-        api.getItemDetail(itemId),
-        api.getCategories(),
+        getItemDetail(itemId),
+        getCategories(),
       ]);
       setFormData(itemResponse.data);
       setCategories(categoriesResponse.data);
@@ -37,7 +37,7 @@ function ItemUpdate() {
 
   const handleSubmit = async () => {
     try {
-      await api.updateItem(itemId, formData);
+      await updateItem(itemId, formData);
       alert("수정 성공!");
       navigate(`/items/${itemId}`);
     } catch (error) {
