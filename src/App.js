@@ -17,6 +17,7 @@ import ItemDetail from "./components/ItemDetail";
 import ItemRegisterPage from "./pages/ItemRegisterPage";
 import ItemUpdatePage from "./pages/ItemUpdatePage";
 import BookSearch from "./components/BookSearch"; // 책 검색
+import MyShop from "./pages/MyShop";
 
 const App = () => {
   return (
@@ -76,7 +77,7 @@ const App = () => {
             path="/"
             element={
               <MainLayout>
-                <LoginPage />
+                <DashboardPage />
               </MainLayout>
             }
           />
@@ -129,6 +130,14 @@ const App = () => {
             element={
               <MainLayout>
                 <BookSearch />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/myshop"
+            element={
+              <MainLayout>
+                <MyShop />
               </MainLayout>
             }
           />
