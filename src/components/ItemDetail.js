@@ -17,7 +17,7 @@ function ItemDetail() {
 
   useEffect(() => {
     fetchItemDetail();
-  }, [itemId]);
+  }, [itemId,fetchItemDetail]);
 
   if (!item) return <div>로딩 중...</div>;
 

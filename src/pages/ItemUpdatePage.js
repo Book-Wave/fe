@@ -4,7 +4,7 @@ import { getItemDetail, updateItem } from "../services/ItemService";
 
 const ItemUpdatePage = () => {
   const { itemId } = useParams(); // URL에서 itemId 가져오기
-  const navigate = useNavigate(); // 페이지 이동을 위한 navigate
+
   const [item, setItem] = useState({
     itemName: "",
     category: "",
