@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getItemDetail, updateItem } from "../services/ItemService";
 
 const ItemUpdatePage = () => {
   const { itemId } = useParams(); // URL에서 itemId 가져오기
-  const navigate = useNavigate(); // 페이지 이동을 위한 navigate
+
   const [item, setItem] = useState({
     itemName: "",
     category: "",
