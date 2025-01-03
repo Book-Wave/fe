@@ -1,7 +1,7 @@
 import React from "react";
-import LoginForm from "../../components/LoginForm";
+import LoginForm from "../../components/auth/LoginForm";
 // import Header from "../components/common/Header";
-import OAuthLoginForm from "../../components/OAuthLoginForm";
+import OAuthLoginForm from "../../components/auth/OAuthLoginForm";
 
 const LoginPage = () => {
   return (

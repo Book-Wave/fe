@@ -1,29 +1,23 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { getAccessToken } from "../utils/TokenUtil";
 
 // 인증 상태를 관리하는 Context
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 
 export const AuthProvider = ({ children }) => {
-  const [access_token, setAuthToken] = useState(
-    localStorage.getItem("access_token")
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const login = (token) => {
-    localStorage.setItem("access_token", token); // 로컬 스토리지에 JWT 저장
-    setAuthToken(token); // 상태 업데이트
-  };
-
-  const logout = () => {
-    localStorage.removeItem("access_token");
-    setAuthToken(null); // 상태 업데이트
-  };
+  useEffect(() => {
+    const token = getAccessToken();
+    setIsLoggedIn(!!token);
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ access_token, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
       {children}
     </AuthContext.Provider>
   );

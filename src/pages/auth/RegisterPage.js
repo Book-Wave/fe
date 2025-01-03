@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import NewUserForm from "../../components/NewUserForm";
-import RegisterForm from "../../components/RegisterForm";
+import NewUserForm from "../../components/auth/NewUserForm";
+import RegisterForm from "../../components/auth/RegisterForm";
 
 const RegisterPage = () => {
   return (
