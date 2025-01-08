@@ -1,5 +1,6 @@
 // axiosInstance.js
-import axios from 'axios';
+import axios from "axios";
+import { getAccessToken, setAccessToken } from "../utils/TokenUtil";
 
 const axiosInstance = axios.create({
   // baseURL: 'http://52.78.186.21:8080/book',
@@ -9,10 +10,10 @@ const axiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
+// ddddddddd
 axiosInstance.interceptors.request.use(
   (config) => {
-    const access_token = localStorage.getItem('access_token');
+    const access_token = getAccessToken();
 
     if (access_token) {
       config.headers['Authorization'] = `Bearer ${access_token}`;
@@ -41,8 +42,7 @@ axiosInstance.interceptors.response.use(
         );
         const newAccessToken = response.data.token;
         console.log('재발급 성공: ', newAccessToken);
-        // 새로운 access_token 저장
-        localStorage.setItem('access_token', newAccessToken);
+        setAccessToken(newAccessToken);
 
         // Authorization 헤더 갱신 후 요청 재시도
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
