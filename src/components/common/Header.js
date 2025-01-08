@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogPanel,
@@ -24,6 +25,10 @@ import {
   PhoneIcon,
   PlayCircleIcon,
 } from "@heroicons/react/20/solid";
+import { AuthContext } from "../../context/AuthContext";
+import { handleLogout } from "../../services/AuthService";
+import { removeAccessToken } from "../../utils/TokenUtil";
+import Button from "./Button";
 
 const products = [
   {
@@ -57,30 +62,126 @@ const products = [
     icon: ArrowPathIcon,
   },
 ];
+
 const callsToAction = [
   { name: "Watch demo", href: "#", icon: PlayCircleIcon },
   { name: "Contact sales", href: "#", icon: PhoneIcon },
 ];
 
-export default function Example() {
+export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const logout = async () => {
+    try {
+      await handleLogout();
+      setIsLoggedIn(false);
+      removeAccessToken();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
-    <header className="bg-white">
-      <nav
-        aria-label="Global"
-        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+    <header
+      className={`shadow-md ${
+        isScrolled ? "fixed top-0 left-0 right-0 z-10 bg-white" : ""
+      }`}
+    >
+      {/* Top Header */}
+      <div
+        className={`flex justify-between items-center px-6 py-4 max-w-screen-xl mx-auto ${
+          isScrolled ? "opacity-0" : ""
+        }`}
       >
-        <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
-            <span className="sr-only">Your Company</span>
-            <img
-              alt=""
-              src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
-              className="h-8 w-auto"
-            />
+        {/* Left: Logo */}
+        <div className="text-2xl font-bold">
+          <a href="/" className="text-blue-500">
+            <img alt="" src="/bookwave.png" className="h-20 w-30"></img>
           </a>
         </div>
+
+        {/* Middle: Search Bar */}
+        <div className="flex-grow max-w-lg mx-4 flex items-center space-x-2">
+          <select className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="title">책 제목</option>
+            <option value="author">저자</option>
+            <option value="publisher">출판사</option>
+            <option value="seller">판매자</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <Button>검색</Button>
+        </div>
+
+        {/* Right: User Info */}
+        <div className="flex items-center space-x-4">
+          {isLoggedIn ? (
+            <>
+              <a href="/myshop" className="text-gray-700 hover:text-blue-500">
+                MyShop
+              </a>
+              <a href="/mychat" className="text-gray-700 hover:text-blue-500">
+                MyChat
+              </a>
+              <a href="/myitem" className="text-gray-700 hover:text-blue-500">
+                MyItem
+              </a>
+              <button
+                onClick={logout}
+                className="text-gray-700 hover:text-blue-500"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="text-gray-700 hover:text-blue-500">
+                Login
+              </button>
+            </>
+          )}
+        </div>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="sm:hidden text-gray-700 hover:text-blue-500"
+        >
+          {mobileMenuOpen ? (
+            <XMarkIcon className="h-6 w-6" />
+          ) : (
+            <Bars3Icon className="h-6 w-6" />
+          )}
+        </button>
+      </div>
+
+      {/* Navbar */}
+      <nav
+        aria-label="Global"
+        className={`mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8 ${
+          isScrolled ? "bg-white" : ""
+        }`}
+      >
         <div className="flex lg:hidden">
           <button
             type="button"
@@ -100,7 +201,6 @@ export default function Example() {
                 className="size-5 flex-none text-gray-400"
               />
             </PopoverButton>
-
             <PopoverPanel
               transition
               className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
@@ -147,23 +247,23 @@ export default function Example() {
               </div>
             </PopoverPanel>
           </Popover>
-
-          <a href="#" className="text-sm/6 font-semibold text-gray-900">
+          <a href="/home" className="text-sm/6 font-semibold text-gray-900">
             Features
           </a>
-          <a href="#" className="text-sm/6 font-semibold text-gray-900">
+          <a href="/home" className="text-sm/6 font-semibold text-gray-900">
             Marketplace
           </a>
-          <a href="#" className="text-sm/6 font-semibold text-gray-900">
+          <a href="/home" className="text-sm/6 font-semibold text-gray-900">
             Company
           </a>
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <a href="#" className="text-sm/6 font-semibold text-gray-900">
+          <a href="/login" className="text-sm/6 font-semibold text-gray-900">
             Log in <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
       </nav>
+
       <Dialog
         open={mobileMenuOpen}
         onClose={setMobileMenuOpen}
@@ -172,7 +272,7 @@ export default function Example() {
         <div className="fixed inset-0 z-10" />
         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
-            <a href="#" className="-m-1.5 p-1.5">
+            <a href="/home" className="-m-1.5 p-1.5">
               <span className="sr-only">Your Company</span>
               <img
                 alt=""
@@ -214,19 +314,19 @@ export default function Example() {
                   </DisclosurePanel>
                 </Disclosure>
                 <a
-                  href="#"
+                  href="/home"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                 >
                   Features
                 </a>
                 <a
-                  href="#"
+                  href="/home"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                 >
                   Marketplace
                 </a>
                 <a
-                  href="#"
+                  href="/home"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                 >
                   Company
@@ -234,8 +334,8 @@ export default function Example() {
               </div>
               <div className="py-6">
                 <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                  href="/home"
+                  className="-mx-3 block rounded-lg py-2.5 px-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                 >
                   Log in
                 </a>

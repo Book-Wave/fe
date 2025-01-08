@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerOAuth, checkNicknameDuplicate } from "../services/AuthService";
-import Button from "./common/Button";
+import {
+  registerOAuth,
+  checkNicknameDuplicate,
+} from "../../services/AuthService";
+import Button from "../common/Button";
 
 const NewUserForm = () => {
   const [formData, setFormData] = useState({
@@ -52,9 +55,7 @@ const NewUserForm = () => {
     try {
       const response = await registerOAuth(nickname, birthdate, gender);
       console.log(response);
-
       localStorage.setItem("access_token", response.access_token);
-      localStorage.setItem("refresh_token", response.refresh_token);
       navigate("/dashboard");
     } catch (error) {
       console.error("Failed to save user info:", error);

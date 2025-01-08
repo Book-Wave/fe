@@ -11,7 +11,6 @@ const Button = ({
   size = "sm",
   disabled = false,
 }) => {
-  // 버튼의 크기 및 스타일을 Tailwind CSS 클래스를 사용하여 동적으로 설정
   const baseStyles =
     "font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50";
   const sizeStyles = {
