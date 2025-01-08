@@ -35,7 +35,7 @@ const ChatRoomDetail = () => {
     if (!roomId || !sender) return;
     const users = cleanRoomId.split('-');
     setReceiver(users.find((user) => user !== sender));
-  }, [cleanRoomId, sender]);
+  }, [cleanRoomId, sender, roomId]);
 
   // 메시지 목록 아래로 자동 스크롤
   const scrollToBottom = useCallback(() => {
