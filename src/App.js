@@ -1,23 +1,23 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 
 // 기존 페이지
-import LoginPage from "./pages/auth/LoginPage";
-import DashboardPage from "./pages/DashBoard";
-import CallbackPage from "./pages/auth/CallBack";
-import RegisterPage from "./pages/auth/RegisterPage";
-import ChatPage from "./pages/ChatPage";
-import MainLayout from "./pages/MainLayout";
-import ForgetPW from "./pages/auth/ForgetPW";
+import LoginPage from './pages/auth/LoginPage';
+import DashboardPage from './pages/DashBoard';
+import CallbackPage from './pages/auth/CallBack';
+import RegisterPage from './pages/auth/RegisterPage';
+import ChatPage from './pages/ChatPage';
+import MainLayout from './pages/MainLayout';
+import ForgetPW from './pages/auth/ForgetPW';
 
 // 추가된 컴포넌트
-import ItemList from "./components/ItemList";
-import ItemDetail from "./components/ItemDetail";
-import ItemRegisterPage from "./pages/ItemRegisterPage";
-import ItemUpdatePage from "./pages/ItemUpdatePage";
-import BookSearch from "./components/BookSearch"; // 책 검색
-import MyShop from "./pages/MyShop";
+import ItemList from './components/ItemList';
+import ItemDetail from './components/ItemDetail';
+import ItemRegisterPage from './pages/ItemRegisterPage';
+import ItemUpdatePage from './pages/ItemUpdatePage';
+import BookSearch from './components/BookSearch'; // 책 검색
+import MyShopPage from './pages/MyShopPage';
 
 const App = () => {
   return (
@@ -137,7 +137,7 @@ const App = () => {
             path="/myshop"
             element={
               <MainLayout>
-                <MyShop />
+                <MyShopPage />
               </MainLayout>
             }
           />
