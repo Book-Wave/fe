@@ -1,11 +1,21 @@
-FROM node:18
-
+# Build stage
+FROM node:18-alpine AS builder
 WORKDIR /app
+COPY package*.json ./
+RUN npm ci
 COPY . .
+RUN npm run build
 
-RUN npm install
+# Production stage
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app/build ./build
+COPY package*.json ./
 
-# 리액트 앱을 3000번 포트에서 실행
-CMD ["npm", "start"]
+# 프로덕션 환경에 필요한 패키지만 설치
+RUN npm ci --only=production
 
+# 정적 파일 서버 설치 및 실행
+RUN npm install -g serve
 EXPOSE 3000
+CMD ["serve", "-s", "build", "-l", "3000"]

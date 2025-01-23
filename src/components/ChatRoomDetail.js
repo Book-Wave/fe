@@ -1,21 +1,22 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Client } from '@stomp/stompjs';
-import { fetchRoomDetails, markMessagesAsRead } from '../services/ChatService'; // 정확한 경로로 수정
+import { fetchRoomDetails, markMessagesAsRead } from '../services/ChatService';
 import { useParams } from 'react-router-dom';
 import { getAccessToken } from '../utils/TokenUtil';
 
 const ChatRoomDetail = () => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
-  const [unreadMessages, setUnreadMessages] = useState(0); // 읽지 않은 메시지
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const client = useRef(null);
   const messagesEndRef = useRef(null);
   const { roomId } = useParams();
 
   const sender = localStorage.getItem('wschat.sender');
-
-  // receiver 설정
   const [receiver, setReceiver] = useState(null);
+
+  const cleanRoomId = roomId?.replace('messages:', ''); // 방 이름에서 "messages:" 제거
+
   const formatDate = (dateString) => {
     if (!dateString) return 'Invalid Date';
     const date = new Date(dateString);
@@ -29,25 +30,25 @@ const ChatRoomDetail = () => {
     });
   };
 
+  // Receiver 설정
   useEffect(() => {
     if (!roomId || !sender) return;
-    const users = roomId.split('-');
-    setReceiver(users.find((user) => user !== sender)); // sender가 아닌 유저 선택
-  }, [roomId, sender]);
+    const users = cleanRoomId.split('-');
+    setReceiver(users.find((user) => user !== sender));
+  }, [cleanRoomId, sender, roomId]);
 
-  // 최신 메시지 스크롤 ref
+  // 메시지 목록 아래로 자동 스크롤
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
   const subscribe = useCallback(() => {
-    if (client.current) {
+    if (client.current?.connected) {
       client.current.subscribe(`/sub/${roomId}`, ({ body }) => {
         const newMessage = JSON.parse(body);
         console.log('새 메시지 수신:', newMessage);
 
         setMessages((prevMessages) => {
-          // 중복 메시지 방지
           if (
             !prevMessages.some(
               (msg) =>
@@ -64,23 +65,26 @@ const ChatRoomDetail = () => {
           setUnreadMessages((prev) => prev + 1);
         }
       });
+    } else {
+      console.error('WebSocket 연결이 활성화되지 않았습니다.');
     }
   }, [roomId, receiver]);
 
   const connect = useCallback(() => {
-    if (client.current && client.current.connected) {
-      console.log('WebSocket already connected');
+    if (client.current?.connected) {
+      console.log('이미 WebSocket이 연결되어 있습니다.');
       return;
     }
+
     console.log('WebSocket 연결 시도...');
     const token = getAccessToken('access_token');
-    console.log('사용 중인 토큰:', token);
 
     client.current = new Client({
-      brokerURL: 'ws://52.78.186.21:8080/ws',
+      brokerURL: 'ws://localhost:8080/ws',
       connectHeaders: {
         Authorization: `Bearer ${token}`,
       },
+      reconnectDelay: 0,
       debug: console.log,
       onConnect: () => {
         console.log('WebSocket 연결 성공');
@@ -121,43 +125,45 @@ const ChatRoomDetail = () => {
   // 읽음 처리
   const markAsRead = useCallback(async () => {
     try {
-      // 상대방 메시지만 읽음 처리
       const unreadMessageIds = messages
         .filter((msg) => msg.sender === receiver && !msg.isRead)
         .map((msg) => msg.messageId);
 
       if (unreadMessageIds.length > 0) {
         await markMessagesAsRead(roomId, unreadMessageIds, receiver);
-        setUnreadMessages(0); // 읽지 않은 메시지 초기화
+        setUnreadMessages(0);
       }
     } catch (error) {
-      console.error('읽음 처리 실패', error);
+      console.error('읽음 처리 실패:', error);
     }
-  }, [roomId, messages, receiver]);
+  }, [messages, receiver, roomId]);
 
+  // WebSocket 연결 및 메시지 데이터 가져오기
   useEffect(() => {
-    fetchRoomData();
-    connect();
+    const initialize = async () => {
+      await fetchRoomData();
+      connect();
+    };
+    initialize();
+
     return () => {
       if (client.current) {
         client.current.deactivate();
+        client.current = null;
         console.log('WebSocket 연결 해제');
       }
     };
-  }, [roomId, fetchRoomData, connect]);
+  }, [fetchRoomData, connect]);
 
+  // 메시지가 변경될 때 읽음 처리 및 스크롤
   useEffect(() => {
     scrollToBottom();
-  }, [messages, scrollToBottom]);
-
-  useEffect(() => {
     markAsRead();
-  }, [markAsRead, messages]);
+  }, [messages, markAsRead, scrollToBottom]);
 
   const sendMessage = () => {
     const token = getAccessToken('access_token');
-    console.log('메세지 시도: ' + message);
-    if (client.current && client.current.connected && message.trim()) {
+    if (client.current?.connected && message.trim()) {
       const now = new Date();
       const formattedTime = formatDate(now);
 
@@ -168,6 +174,7 @@ const ChatRoomDetail = () => {
         message,
         messagetime: formattedTime,
       };
+
       client.current.publish({
         destination: '/pub/message',
         headers: {
@@ -175,11 +182,17 @@ const ChatRoomDetail = () => {
         },
         body: JSON.stringify(newMessage),
       });
-      console.log('보낸 메시지:', newMessage);
 
-      // 로컬 상태 업데이트
+      console.log('보낸 메시지:', newMessage);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
       setMessage('');
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
     }
   };
 
@@ -187,7 +200,7 @@ const ChatRoomDetail = () => {
     <div className="flex flex-col h-full">
       <header className="bg-white p-4 border-b border-gray-300">
         <h1 className="text-2xl font-semibold">
-          {roomId || '채팅방'}
+          {cleanRoomId || '채팅방'}
           {unreadMessages > 0 && (
             <span className="ml-2 text-red-500">({unreadMessages})</span>
           )}
@@ -203,14 +216,14 @@ const ChatRoomDetail = () => {
             <div
               className={`${
                 msg.sender === sender
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-gray-100 text-black'
-              } max-w-[75%] rounded-lg p-3 mb-2`}
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-black'
+              } max-w-[75%] rounded-lg p-3 mb-2 shadow`}
             >
               {msg.sender !== sender && (
-                <div className="text-xs text-gray-500 mb-1">{receiver}</div>
+                <div className="text-xs text-gray-500 mb-1">{msg.sender}</div>
               )}
-              {msg.message}
+              <div className="text-sm">{msg.message}</div>
               <div className="text-xs text-gray-500 mt-1">
                 {formatDate(msg.messagetime)}
               </div>
@@ -228,10 +241,11 @@ const ChatRoomDetail = () => {
             placeholder="메시지를 입력하세요..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <button
             onClick={sendMessage}
-            className="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+            className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow"
           >
             보내기
           </button>

@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Button from "../common/Button";
-import { loginHandler } from "../../services/AuthService";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import Button from '../common/Button';
+import { loginHandler } from '../../services/AuthService';
+import { useNavigate, Link } from 'react-router-dom';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +13,6 @@ const LoginForm = () => {
 
     try {
       const response = await loginHandler(email, password);
-      // JWT 토큰을 로컬 스토리지에 저장
       const access_token = response.headers['authorization']?.split(' ')[1];
       console.log(response);
       localStorage.setItem('access_token', access_token);
