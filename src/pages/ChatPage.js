@@ -22,7 +22,7 @@ const ChatPage = () => {
           // navigate('/'); // 닉네임이 없는 경우 홈으로 리다이렉트
         }
       } catch (error) {
-        console.error('닉네임 가져오기 실패:', error);
+        console.error('닉네임 가져오기 실패:', error);  
         // navigate('/'); // 에러 시 홈으로 리다이렉트
       }
     };

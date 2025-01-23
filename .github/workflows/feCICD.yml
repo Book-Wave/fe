@@ -24,11 +24,14 @@ jobs:
     - name: Checkout source code.  
       uses: actions/checkout@v4
       
-    - name: Check Node v            # Node v 확인
-      run: node -v
-      
-    - name: Install dependencies    # 의존 파일 설치
-      run: npm install
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci --prefer-offline --no-audit
     
     - name: Generate build          # React Build
       run: npm run build
@@ -53,14 +56,12 @@ jobs:
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.EC2_HOST }} # EC2 인스턴스 탄력적 IP
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }} # pem 키 삽입
-        # 도커 작업
-        script: |
-          docker stop fe || true
-          docker rm fe || true
-          docker pull ${{ secrets.DOCKER_USERNAME }}/medo:latest
-          docker run -d -p 3000:3000 --name fe ${{ secrets.DOCKER_USERNAME }}/medo:latest
-          docker image prune -a -f
-
+       host: ${{ secrets.EC2_HOST }}
+       username: ubuntu
+       key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+       script: |
+         docker stop fe || true
+         docker rm fe || true
+         docker pull ${{ secrets.DOCKER_USERNAME }}/medo:latest
+         docker run -d -p 3000:3000 --cpus="1.0" --memory="1g" --name fe ${{ secrets.DOCKER_USERNAME }}/medo:latest
+         docker image prune -a -f
