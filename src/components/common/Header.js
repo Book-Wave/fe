@@ -101,14 +101,10 @@ export default function Header() {
 
   return (
     <header
-      className={`shadow-md ${
-        isScrolled ? 'fixed top-0 left-0 right-0 z-10 bg-white' : ''
-      }`}
+      className={`shadow-md ${isScrolled ? "bg-white z-10" : ""}`}
     >
       <div
-        className={`flex justify-between items-center px-6 py-4 max-w-screen-xl mx-auto ${
-          isScrolled ? 'opacity-0' : ''
-        }`}
+        className={`flex justify-between items-center px-6 py-4 max-w-screen-xl mx-auto`}
       >
         <div className="text-2xl font-bold">
           <Link to="/" className="text-blue-500">

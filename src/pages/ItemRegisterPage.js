@@ -1,12 +1,9 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
 import { registerItem } from "../services/ItemService";
 import { fetchNickName } from "../services/ChatService";
 import BookSearch from "../components/BookSearch";
 
-
 const ItemRegisterPage = () => {
-  // 카테고리 데이터
   const categories = [
     { category_id: 1, category_name: "총류" },
     { category_id: 2, category_name: "철학" },
@@ -21,36 +18,58 @@ const ItemRegisterPage = () => {
     { category_id: 11, category_name: "기타" },
   ];
 
-  // 상태 관리
-  const [itemName, setItemName] = useState(""); // 게시물 이름
-  const [myPrice, setMyPrice] = useState(""); // 상품 가격
-  const [note, setNote] = useState(""); // 메모
-  const [selectedCategory, setSelectedCategory] = useState({}); // 선택한 카테고리
-  const [bookInfo, setBookInfo] = useState(null); // 선택된 책 정보
+  const [itemName, setItemName] = useState("");
+  const [myPrice, setMyPrice] = useState("");
+  const [note, setNote] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState({});
+  const [bookInfo, setBookInfo] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [sellerId, setSellerId] = useState(""); // 닉네임 저장
 
+  // 닉네임 가져오기
+  useEffect(() => {
+    const fetchSellerNickname = async () => {
+      try {
+        const nickname = await fetchNickName();
+        setSellerId(nickname); // 닉네임 저장
+      } catch (error) {
+        console.error("닉네임 불러오기 실패:", error);
+      }
+    };
 
-  // 로컬 스토리지에서 sellerId 가져오기
-  const sellerId = fetchNickName().data;
+    fetchSellerNickname();
+  }, []);
 
-  // POST 요청 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
-      ...bookInfo,  
       itemName,
       category: selectedCategory.category_id,
       categoryName: selectedCategory.category_name,
-      sellerId,
+      sellerId, // 가져온 닉네임을 sellerId로 저장
       myPrice: parseInt(myPrice, 10),
       note,
-     
+      title: bookInfo?.title || null,
+      author: bookInfo?.author || null,
+      publisher: bookInfo?.publisher || null,
+      price: bookInfo?.price || null,
+      description: bookInfo?.description || null,
+      link: bookInfo?.link || null,
+      image: bookInfo?.image || null,
     };
 
     try {
-      const response = await registerItem(payload); // 외부 메서드 호출
+      const response = await registerItem(payload);
       alert("상품이 등록되었습니다!");
       console.log("Response:", response.data);
+
+      // 입력 필드 초기화
+      setItemName("");
+      setMyPrice("");
+      setNote("");
+      setSelectedCategory({});
+      setBookInfo(null);
     } catch (error) {
       console.error("Error registering item:", error);
       alert("상품 등록 중 오류가 발생했습니다.");
@@ -61,7 +80,6 @@ const ItemRegisterPage = () => {
     <div style={{ padding: "20px", maxWidth: "600px", margin: "auto" }}>
       <h1>상품 등록</h1>
       <form onSubmit={handleSubmit}>
-        {/* 게시물 이름 */}
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="itemName">게시물 이름:</label>
           <input
@@ -75,14 +93,15 @@ const ItemRegisterPage = () => {
           />
         </div>
 
-        {/* 카테고리 선택 */}
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="category">카테고리:</label>
           <select
             id="category"
             value={selectedCategory.category_id || ""}
             onChange={(e) => {
-              const selected = categories.find((cat) => cat.category_id === parseInt(e.target.value, 10));
+              const selected = categories.find(
+                (cat) => cat.category_id === parseInt(e.target.value, 10)
+              );
               setSelectedCategory(selected || {});
             }}
             required
@@ -99,10 +118,106 @@ const ItemRegisterPage = () => {
           </select>
         </div>
 
-        {/* 책 검색 */}
-        <BookSearch setBookInfo={setBookInfo} />
+        <button
+          type="button"
+          onClick={() => setShowPopup(true)}
+          style={{
+            marginBottom: "10px",
+            padding: "5px 10px",
+            background: "#007BFF",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+          }}
+        >
+          책 검색
+        </button>
 
-        {/* 가격 입력 */}
+        {showPopup && (
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "#fff",
+              padding: "20px",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+              zIndex: 1000,
+              width: "40%",
+              maxHeight: "80%",
+              overflowY: "auto",
+              borderRadius: "8px",
+            }}
+          >
+            <BookSearch
+              setBookInfo={(info) => {
+                setBookInfo(info);
+                setShowPopup(false);
+              }}
+            />
+            <button
+              onClick={() => setShowPopup(false)}
+              style={{
+                marginTop: "10px",
+                padding: "5px 10px",
+                background: "#d9534f",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+              }}
+            >
+              닫기
+            </button>
+          </div>
+        )}
+
+        {bookInfo && (
+          <div
+            style={{
+              marginBottom: "10px",
+              padding: "10px",
+              border: "1px solid #ddd",
+              borderRadius: "5px",
+              background: "#f9f9f9",
+            }}
+          >
+            <h4>선택된 책 정보</h4>
+            <p>
+              <strong>책 이름:</strong> {bookInfo.title || "없음"}
+            </p>
+            <p>
+              <strong>저자:</strong> {bookInfo.author || "없음"}
+            </p>
+            <p>
+              <strong>출판사:</strong> {bookInfo.publisher || "없음"}
+            </p>
+            <p>
+              <strong>가격:</strong> {bookInfo.price || "없음"}
+            </p>
+            <p>
+              <strong>설명:</strong> {bookInfo.description || "없음"}
+            </p>
+            <p>
+              <strong>링크:</strong>{" "}
+              {bookInfo.link ? (
+                <a href={bookInfo.link} target="_blank" rel="noopener noreferrer">
+                  책 링크
+                </a>
+              ) : (
+                "없음"
+              )}
+            </p>
+            {bookInfo.image && (
+              <img
+                src={bookInfo.image}
+                alt="책 이미지"
+                style={{ width: "100px", height: "auto" }}
+              />
+            )}
+          </div>
+        )}
+
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="myPrice">가격:</label>
           <input
@@ -116,7 +231,6 @@ const ItemRegisterPage = () => {
           />
         </div>
 
-        {/* 메모 입력 */}
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="note">메모:</label>
           <textarea
@@ -128,8 +242,15 @@ const ItemRegisterPage = () => {
           ></textarea>
         </div>
 
-        {/* 제출 버튼 */}
-        <button type="submit" style={{ padding: "10px 20px", background: "#007BFF", color: "#fff", border: "none" }}>
+        <button
+          type="submit"
+          style={{
+            padding: "10px 20px",
+            background: "#007BFF",
+            color: "#fff",
+            border: "none",
+          }}
+        >
           등록하기
         </button>
       </form>
