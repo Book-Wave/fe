@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchShopReviews } from '../services/ShopService';
 
-const ReviewsTab = ({ shopId }) => {
+const ReviewsTab = ({ shopId, onCountChange }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,21 +10,29 @@ const ReviewsTab = ({ shopId }) => {
   useEffect(() => {
     const loadReviews = async () => {
       try {
+        console.log('Loading reviews for shopId:', shopId);
         if (!shopId) return;
+
         const response = await fetchShopReviews(shopId);
-        // 응답 데이터가 배열인지 확인
+        console.log('Reviews API Response:', response);
+
         const data = Array.isArray(response) ? response : [];
+        console.log('Formatted review data:', data);
+
         setReviews(data);
+
+        // 리뷰 개수 업데이트
+        onCountChange?.(data.length);
       } catch (err) {
+        console.error('Reviews loading error:', err);
         setError('후기를 불러오는데 실패했습니다.');
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
     loadReviews();
-  }, [shopId]);
+  }, [shopId, onCountChange]);
 
   const getReviewText = (review) => {
     const reviewPoints = [];

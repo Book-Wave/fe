@@ -16,6 +16,8 @@ export const fetchShopInfo = async (shopId) => {
 export const fetchShopItems = async (shopId) => {
   try {
     const response = await axiosInstance.get(`/shops/${shopId}/items`);
+    console.log('response : ', response);
+    console.log('response data : ', response.data);
     return response.data;
   } catch (error) {
     console.error('상품 목록을 불러오지 못했습니다:', error);

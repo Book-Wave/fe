@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getItemDetail, updateItem } from "../services/ItemService";
+import BookSearch from "../components/BookSearch";
 
 const ItemUpdatePage = () => {
   const { itemId } = useParams(); // URL에서 itemId 가져오기
@@ -13,7 +14,12 @@ const ItemUpdatePage = () => {
     author: "",
     description: "",
     publisher: "",
-  }); // DB에서 가져온 데이터를 담을 상태
+    price: "",
+    link: "",
+    image: "",
+  }); // 기존 데이터 상태
+  const [bookInfo, setBookInfo] = useState(null); // 선택된 책 정보
+  const [showPopup, setShowPopup] = useState(false); // 팝업 상태
 
   const categories = [
     { category_id: 1, category_name: "총류" },
@@ -30,13 +36,21 @@ const ItemUpdatePage = () => {
   ];
 
   useEffect(() => {
-    // 초기 데이터 가져오기
+    // 서버에서 기존 데이터 가져오기
     const fetchItem = async () => {
       try {
-        const response = await getItemDetail(itemId); // GET 요청으로 데이터 가져오기
-        console.log("Response received:", response); // 전체 응답 확인
-        console.log("Response data:", response.data); // 응답 데이터 확인   
-        setItem(response.data);     
+        const response = await getItemDetail(itemId);
+        console.log("Item data:", response.data);
+        setItem(response.data);
+        setBookInfo({
+          title: response.data.title,
+          author: response.data.author,
+          publisher: response.data.publisher,
+          price: response.data.price,
+          description: response.data.description,
+          link: response.data.link,
+          image: response.data.image,
+        });
       } catch (error) {
         console.error("Error fetching item data:", error);
         alert("상품 정보를 불러오지 못했습니다.");
@@ -49,10 +63,14 @@ const ItemUpdatePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const updatedItem = {
+      ...item,
+      ...bookInfo,
+    };
+
     try {
-      await updateItem(itemId, item); // PUT 요청으로 수정된 데이터를 서버로 전송
+      await updateItem(itemId, updatedItem);
       alert("상품이 수정되었습니다!");
-      // navigate(`/items/${itemId}`); // 수정 완료 후 상세 페이지로 이동
     } catch (error) {
       console.error("Error updating item:", error);
       alert("상품 수정 중 오류가 발생했습니다.");
@@ -67,13 +85,10 @@ const ItemUpdatePage = () => {
     }));
   };
 
-  if (!item) return <p>로딩 중...</p>;
-
   return (
     <div style={{ padding: "20px", maxWidth: "600px", margin: "auto" }}>
       <h1>상품 수정</h1>
       <form onSubmit={handleSubmit}>
-        {/* 게시물 이름 */}
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="itemName">게시물 이름:</label>
           <input
@@ -88,7 +103,6 @@ const ItemUpdatePage = () => {
           />
         </div>
 
-        {/* 카테고리 선택 */}
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="category">카테고리:</label>
           <select
@@ -114,7 +128,106 @@ const ItemUpdatePage = () => {
           </select>
         </div>
 
-        {/* 가격 입력 */}
+        <button
+          type="button"
+          onClick={() => setShowPopup(true)}
+          style={{
+            marginBottom: "10px",
+            padding: "5px 10px",
+            background: "#007BFF",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+          }}
+        >
+          책 검색
+        </button>
+
+        {showPopup && (
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "#fff",
+              padding: "20px",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+              zIndex: 1000,
+              width: "80%",
+              maxHeight: "80%",
+              overflowY: "auto",
+              borderRadius: "8px",
+            }}
+          >
+            <BookSearch
+              setBookInfo={(info) => {
+                setBookInfo(info);
+                setShowPopup(false); // 팝업 닫기
+              }}
+            />
+            <button
+              onClick={() => setShowPopup(false)}
+              style={{
+                marginTop: "10px",
+                padding: "5px 10px",
+                background: "#d9534f",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+              }}
+            >
+              닫기
+            </button>
+          </div>
+        )}
+
+        {bookInfo && (
+          <div
+            style={{
+              marginBottom: "10px",
+              padding: "10px",
+              border: "1px solid #ddd",
+              borderRadius: "5px",
+              background: "#f9f9f9",
+            }}
+          >
+            <h4>선택된 책 정보</h4>
+            <p>
+              <strong>책 이름:</strong> {bookInfo.title || "없음"}
+            </p>
+            <p>
+              <strong>저자:</strong> {bookInfo.author || "없음"}
+            </p>
+            <p>
+              <strong>출판사:</strong> {bookInfo.publisher || "없음"}
+            </p>
+            <p>
+              <strong>가격:</strong> {bookInfo.price || "없음"}
+            </p>
+            <p>
+              <strong>설명:</strong> {bookInfo.description || "없음"}
+            </p>
+            <p>
+              <strong>링크:</strong>{" "}
+              {bookInfo.link ? (
+                <a href={bookInfo.link} target="_blank" rel="noopener noreferrer">
+                  책 링크
+                </a>
+              ) : (
+                "없음"
+              )}
+            </p>
+            {bookInfo.image && (
+              <img
+                src={bookInfo.image}
+                alt="책 이미지"
+                style={{ width: "100px", height: "auto" }}
+              />
+            )}
+          </div>
+        )}
+
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="myPrice">가격:</label>
           <input
@@ -129,34 +242,6 @@ const ItemUpdatePage = () => {
           />
         </div>
 
-        {/* 저자 */}
-        <div style={{ marginBottom: "10px" }}>
-          <label htmlFor="author">저자:</label>
-          <input
-            type="text"
-            id="author"
-            name="author"
-            value={item.author || ""}
-            onChange={handleChange}
-            placeholder="저자를 입력하세요"
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-
-        {/* 설명 */}
-        <div style={{ marginBottom: "10px" }}>
-          <label htmlFor="description">설명:</label>
-          <textarea
-            id="description"
-            name="description"
-            value={item.description || ""}
-            onChange={handleChange}
-            placeholder="상품 설명을 입력하세요"
-            style={{ width: "100%", padding: "8px" }}
-          ></textarea>
-        </div>
-
-        {/* 메모 */}
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="note">메모:</label>
           <textarea
@@ -169,7 +254,6 @@ const ItemUpdatePage = () => {
           ></textarea>
         </div>
 
-        {/* 제출 버튼 */}
         <button
           type="submit"
           style={{

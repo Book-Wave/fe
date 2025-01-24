@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchZzimlist } from '../services/ShopService';
 
-const ZzimsTab = ({ shopId }) => {
+const ZzimsTab = ({ shopId, onCountChange }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,10 +10,15 @@ const ZzimsTab = ({ shopId }) => {
   useEffect(() => {
     const loadZzimItems = async () => {
       try {
+        console.log('Loading zzim items for shopId:', shopId);
         if (!shopId) return;
+
         const response = await fetchZzimlist(shopId);
-        // 응답 데이터가 배열인지 확인
+        console.log('Zzim API Response:', response);
+
         const data = Array.isArray(response) ? response : [];
+        console.log('Formatted zzim data:', data);
+
         const formattedItems = data.map((item) => ({
           id: item.itemId,
           title: item.title,
@@ -22,17 +27,22 @@ const ZzimsTab = ({ shopId }) => {
           imageUrl: item.image || '/fallback-image.png',
           updatedAt: item.regDate,
         }));
+
+        console.log('Final formatted zzim items:', formattedItems);
         setItems(formattedItems);
+
+        // 찜 개수 업데이트
+        onCountChange?.(formattedItems.length);
       } catch (err) {
+        console.error('Zzim loading error:', err);
         setError('찜한 상품 목록을 불러오는데 실패했습니다.');
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
     loadZzimItems();
-  }, [shopId]);
+  }, [shopId, onCountChange]);
 
   const formatPrice = (price) => {
     return price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') || '0';
@@ -92,6 +102,7 @@ const ZzimsTab = ({ shopId }) => {
                 alt={item.title}
                 className="absolute inset-0 w-full h-full object-cover"
                 onError={(e) => {
+                  console.log('Image load error:', item.title);
                   e.target.src = '/fallback-image.png';
                 }}
               />

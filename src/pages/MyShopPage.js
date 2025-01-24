@@ -4,48 +4,69 @@ import ItemsTab from '../components/ItemsTab';
 import ReviewsTab from '../components/ReviewsTab';
 import ZzimsTab from '../components/ZzimsTab';
 import { fetchNickName } from '../services/ChatService';
+import {
+  fetchShopItems,
+  fetchShopReviews,
+  fetchZzimlist,
+} from '../services/ShopService';
 
 const MyShopPage = () => {
   const [activeTab, setActiveTab] = useState('items');
   const [nickname, setNickname] = useState('');
   const [loading, setLoading] = useState(true);
+  const [itemsCount, setItemsCount] = useState(0);
+  const [reviewsCount, setReviewsCount] = useState(0);
+  const [zzimsCount, setZzimsCount] = useState(0);
 
   useEffect(() => {
-    const loadNickname = async () => {
+    const loadData = async () => {
       try {
+        // 닉네임 로드
         const name = await fetchNickName();
         setNickname(name);
+        console.log('Loaded nickname:', name);
+
+        // 각 데이터 로드
+        const items = await fetchShopItems(name);
+        const reviews = await fetchShopReviews(name);
+        const zzims = await fetchZzimlist(name);
+
+        // 카운트 설정
+        setItemsCount(Array.isArray(items) ? items.length : 0);
+        setReviewsCount(Array.isArray(reviews) ? reviews.length : 0);
+        setZzimsCount(Array.isArray(zzims) ? zzims.length : 0);
+
+        console.log('Counts loaded:', {
+          items: items?.length || 0,
+          reviews: reviews?.length || 0,
+          zzims: zzims?.length || 0,
+        });
       } catch (error) {
-        console.error('닉네임 가져오기 실패:', error);
+        console.error('데이터 로드 실패:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadNickname();
+    loadData();
   }, []);
 
-  // 임시 상점 정보 데이터
+  // 상점 정보 데이터
   const shopInfo = {
     name: nickname || '로딩중...',
-    openDate: '2023.01',
-    products: 123,
-    followers: 45,
-    following: 67,
-    description: '신뢰할 수 있는 거래를 약속드립니다.',
     profileImage: 'https://via.placeholder.com/100',
   };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'items':
-        return <ItemsTab shopId={nickname} />;
+        return <ItemsTab shopId={nickname} onCountChange={setItemsCount} />;
       case 'reviews':
-        return <ReviewsTab shopId={nickname} />;
+        return <ReviewsTab shopId={nickname} onCountChange={setReviewsCount} />;
       case 'zzims':
-        return <ZzimsTab shopId={nickname} />;
+        return <ZzimsTab shopId={nickname} onCountChange={setZzimsCount} />;
       default:
-        return <ItemsTab shopId={nickname} />;
+        return <ItemsTab shopId={nickname} onCountChange={setItemsCount} />;
     }
   };
 
@@ -78,9 +99,7 @@ const MyShopPage = () => {
 
             {/* 상점 통계 */}
             <div className="flex gap-4 text-gray-600 mb-4">
-              <span>상품 {shopInfo.products}</span>
-              <span>팔로워 {shopInfo.followers}</span>
-              <span>팔로잉 {shopInfo.following}</span>
+              <span>상품 {itemsCount}</span>
             </div>
 
             {/* 상점 소개 */}
@@ -99,7 +118,7 @@ const MyShopPage = () => {
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
-          상품 {shopInfo.products}
+          상품 {itemsCount}
         </button>
         <button
           onClick={() => setActiveTab('reviews')}
@@ -109,7 +128,7 @@ const MyShopPage = () => {
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
-          상점후기
+          상점후기 {reviewsCount}
         </button>
         <button
           onClick={() => setActiveTab('zzims')}
@@ -119,7 +138,7 @@ const MyShopPage = () => {
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
-          찜
+          찜 {zzimsCount}
         </button>
       </div>
 

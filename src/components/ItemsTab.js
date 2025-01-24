@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchShopItems } from '../services/ShopService';
 
-const ItemsTab = ({ shopId }) => {
+const ItemsTab = ({ shopId, onCountChange }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,29 +11,39 @@ const ItemsTab = ({ shopId }) => {
   useEffect(() => {
     const loadShopItems = async () => {
       try {
+        console.log('Loading items for shopId:', shopId);
         if (!shopId) return;
+
         const response = await fetchShopItems(shopId);
-        // 응답 데이터가 배열인지 확인
+        console.log('Items API Response:', response);
+
         const data = Array.isArray(response) ? response : [];
+        console.log('Formatted data array:', data);
+
         const formattedProducts = data.map((item) => ({
           id: item.itemId,
           title: item.title,
           price: item.price,
           status: getStatusText(item.status),
-          imageUrl: item.image || '/fallback-image.png', // 기본 이미지 설정
+          imageUrl: item.image || '/fallback-image.png',
           updatedAt: item.modDate,
         }));
+
+        console.log('Final formatted products:', formattedProducts);
         setProducts(formattedProducts);
+
+        // 상품 개수 업데이트
+        onCountChange?.(formattedProducts.length);
       } catch (err) {
+        console.error('Error details:', err);
         setError('상품 목록을 불러오는데 실패했습니다.');
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
     loadShopItems();
-  }, [shopId]);
+  }, [shopId, onCountChange]);
 
   const getStatusText = (statusCode) => {
     switch (statusCode) {
@@ -118,6 +128,7 @@ const ItemsTab = ({ shopId }) => {
                 alt={product.title}
                 className="absolute inset-0 w-full h-full object-cover"
                 onError={(e) => {
+                  console.log('Image load error:', product.title);
                   e.target.src = '/fallback-image.png';
                 }}
               />

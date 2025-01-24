@@ -12,7 +12,7 @@ import MainLayout from './pages/MainLayout';
 import ForgetPW from './pages/auth/ForgetPW';
 
 // 추가된 컴포넌트
-import ItemList from './components/ItemList';
+import ItemListPage from './pages/ItemListPage';
 import ItemDetail from './components/ItemDetail';
 import ItemRegisterPage from './pages/ItemRegisterPage';
 import ItemUpdatePage from './pages/ItemUpdatePage';
@@ -95,7 +95,7 @@ const App = () => {
             path="/items"
             element={
               <MainLayout>
-                <ItemList />
+                <ItemListPage /> {/* ItemList 대신 ItemListPage */}
               </MainLayout>
             }
           />
