@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { getPaginatedItems } from "../services/ItemService";
 import { Link } from "react-router-dom";
 
@@ -13,10 +13,8 @@ const ItemListPage = () => {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-
-        // 초기 데이터 로드
         const response = await getPaginatedItems(1, pageSize);
-        console.log("Initial Items:", response.data.items); // 데이터를 로그로 확인
+        console.log("Initial Items:", response.data.items);
         setItems(response.data.items);
         setHasMore(response.data.currentPage < response.data.totalPages);
       } catch (error) {
@@ -29,14 +27,15 @@ const ItemListPage = () => {
     fetchInitialData();
   }, [pageSize]);
 
-  const fetchMoreItems = async () => {
+  // Memoize fetchMoreItems with useCallback
+  const fetchMoreItems = useCallback(async () => {
     if (!hasMore || isLoading) return;
 
     try {
       setIsLoading(true);
       const nextPage = currentPage + 1;
       const response = await getPaginatedItems(nextPage, pageSize);
-      console.log(`Fetched Page ${nextPage}:`, response.data.items); // 추가 로드된 데이터 로그
+      console.log(`Fetched Page ${nextPage}:`, response.data.items);
       setItems((prevItems) => [...prevItems, ...response.data.items]);
       setCurrentPage(nextPage);
       setHasMore(nextPage < response.data.totalPages);
@@ -45,7 +44,7 @@ const ItemListPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, pageSize, hasMore, isLoading]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,7 +59,7 @@ const ItemListPage = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isLoading, hasMore, fetchMoreItems]);
+  }, [fetchMoreItems, isLoading]);
 
   return (
     <div className="bg-gray-50 flex justify-center py-6">
@@ -70,7 +69,7 @@ const ItemListPage = () => {
         </h1>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {items.map((item, index) => {
-            console.log(`Item ${index} - ID: ${item.itemId}, myPrice: ${item.myPrice}`); // 각각의 item 로그
+            console.log(`Item ${index} - ID: ${item.itemId}, myPrice: ${item.myPrice}`);
 
             return (
               <Link
