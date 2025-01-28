@@ -60,7 +60,7 @@ const ItemListPage = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isLoading, hasMore]);
+  }, [isLoading, hasMore, fetchMoreItems]);
 
   return (
     <div className="bg-gray-50 flex justify-center py-6">
