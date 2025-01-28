@@ -95,7 +95,7 @@ const App = () => {
             path="/items"
             element={
               <MainLayout>
-                <ItemListPage /> {/* ItemList 대신 ItemListPage */}
+                <ItemListPage />
               </MainLayout>
             }
           />
@@ -133,8 +133,9 @@ const App = () => {
               </MainLayout>
             }
           />
+          {/* 판매자의 MyShop 경로 */}
           <Route
-            path="/myshop"
+            path="/shop/:sellerId"
             element={
               <MainLayout>
                 <MyShopPage />
