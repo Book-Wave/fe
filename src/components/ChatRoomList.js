@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { createRoom, fetchRooms } from '../services/ChatService';
+import { fetchRooms } from '../services/ChatService';
 import { useNavigate } from 'react-router-dom';
 
 const ChatRoomList = () => {
   const [rooms, setRooms] = useState([]);
-  const [receiverName, setReceiverName] = useState('');
   const navigate = useNavigate();
 
   const loadRooms = async () => {
@@ -20,54 +19,20 @@ const ChatRoomList = () => {
     loadRooms();
   }, []);
 
-  const handleCreateRoom = async () => {
-    const sender = localStorage.getItem('wschat.sender');
-    if (!receiverName.trim()) {
-      alert('대화 상대를 입력해주세요.');
-      return;
-    }
-    try {
-      await createRoom(sender, receiverName.trim());
-      alert(`${receiverName} 님과의 채팅방이 생성되었습니다.`);
-      loadRooms();
-    } catch (error) {
-      console.error('채팅방 개설 실패:', error);
-      alert('채팅방 개설에 실패했습니다. 다시 시도해주세요.');
-    }
-  };
-
   const enterRoom = (roomId) => {
     navigate(`/chat/room/${roomId}`);
   };
 
-  // 채팅방 이름을 깔끔하게 표시하는 함수
   const formatRoomName = (roomId) => {
     return roomId.replace('messages:', '');
   };
 
-  // 사용자 이니셜을 가져오는 함수
   const getInitials = (name) => {
     return name.charAt(0).toUpperCase();
   };
 
   return (
     <div className="overflow-y-auto flex-grow p-3">
-      <div className="mb-4">
-        <input
-          type="text"
-          value={receiverName}
-          onChange={(e) => setReceiverName(e.target.value)}
-          placeholder="대화 상대를 입력하세요"
-          className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <button
-          onClick={handleCreateRoom}
-          className="bg-indigo-500 text-white px-4 py-2 mt-2 rounded-md w-full hover:bg-indigo-600 transition-colors"
-        >
-          채팅방 만들기
-        </button>
-      </div>
-
       {rooms.length > 0 ? (
         rooms.map((room) => {
           const roomName = formatRoomName(room.roomId);
@@ -89,9 +54,14 @@ const ChatRoomList = () => {
           );
         })
       ) : (
-        <p className="text-sm text-gray-500 text-center mt-4">
-          채팅방이 없습니다. 새로 만들어보세요!
-        </p>
+        <div className="text-center py-8">
+          <p className="text-gray-500 mb-2">진행 중인 채팅이 없습니다.</p>
+          <p className="text-sm text-gray-400">
+            관심있는 상품의 구매하기 버튼을 눌러
+            <br />
+            판매자와 대화를 시작해보세요!
+          </p>
+        </div>
       )}
     </div>
   );

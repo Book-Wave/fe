@@ -28,6 +28,15 @@
   color: #61dafb;
 }
 
+.nickname {
+  white-space: normal;
+  overflow: visible;
+  word-break: break-word;
+  font-size: 16px; /* 텍스트 크기 고정 */
+  text-align: left;
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

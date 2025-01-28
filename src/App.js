@@ -1,8 +1,8 @@
-// App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
+// 기존 페이지
 import LoginPage from './pages/auth/LoginPage';
 import DashboardPage from './pages/DashBoard';
 import CallbackPage from './pages/auth/CallBack';
@@ -10,11 +10,13 @@ import RegisterPage from './pages/auth/RegisterPage';
 import ChatPage from './pages/ChatPage';
 import MainLayout from './pages/MainLayout';
 import ForgetPW from './pages/auth/ForgetPW';
-import ItemList from './components/ItemList';
+
+// 추가된 컴포넌트
+import ItemListPage from './pages/ItemListPage';
 import ItemDetail from './components/ItemDetail';
 import ItemRegisterPage from './pages/ItemRegisterPage';
 import ItemUpdatePage from './pages/ItemUpdatePage';
-import BookSearch from './components/BookSearch';
+import BookSearch from './components/BookSearch'; // 책 검색
 import MyShopPage from './pages/MyShopPage';
 
 const App = () => {
@@ -22,6 +24,7 @@ const App = () => {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* 기존 라우트 */}
           <Route
             path="/login"
             element={
@@ -86,11 +89,13 @@ const App = () => {
               </MainLayout>
             }
           />
+
+          {/* 상품 관련 라우트 */}
           <Route
             path="/items"
             element={
               <MainLayout>
-                <ItemList />
+                <ItemListPage /> {/* ItemList 대신 ItemListPage */}
               </MainLayout>
             }
           />
@@ -118,6 +123,8 @@ const App = () => {
               </MainLayout>
             }
           />
+
+          {/* 책 검색 관련 라우트 */}
           <Route
             path="/book-search"
             element={
@@ -127,7 +134,7 @@ const App = () => {
             }
           />
           <Route
-            path="/shop/:nickname"
+            path="/shop/:shopId"
             element={
               <MainLayout>
                 <MyShopPage />
