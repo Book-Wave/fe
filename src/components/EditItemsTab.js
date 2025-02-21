@@ -1,4 +1,3 @@
-// components/EditItemsTab.js
 import React, { useState, useEffect } from 'react';
 import {
   fetchShopItems,
@@ -62,19 +61,6 @@ const EditItemsTab = ({ shopId }) => {
 
   const handleEdit = (itemId) => {
     navigate(`/items/${itemId}/update`);
-  };
-
-  const getStatusText = (status) => {
-    switch (status) {
-      case 0:
-        return '판매중';
-      case 1:
-        return '예약중';
-      case 2:
-        return '판매완료';
-      default:
-        return '판매중';
-    }
   };
 
   if (loading) return <div className="text-center py-8">로딩 중...</div>;

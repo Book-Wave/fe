@@ -25,7 +25,7 @@ export const naverCallback = async (code, state) => {
 };
 
 export const handleLogout = async () => {
-  const response = await axiosInstance.post("/auth/logout");
+  const response = await axiosInstance.post('/auth/logout');
   return response;
 };
 
@@ -45,7 +45,8 @@ export const checkNicknameDuplicate = async (nickname) => {
 
 export const whoami = async () => {
   const response = await axiosInstance.get(`/member/me`);
-  return response;
+  console.log('check: ', response.data);
+  return response.data.nickname;
 };
 
 export const sendEmail = async (email) => {
