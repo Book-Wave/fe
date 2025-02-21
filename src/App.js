@@ -135,7 +135,7 @@ const App = () => {
           />
           {/* 판매자의 MyShop 경로 */}
           <Route
-            path="/shop/:sellerId"
+            path="/shop/:shopId"
             element={
               <MainLayout>
                 <MyShopPage />

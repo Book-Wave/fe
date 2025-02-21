@@ -1,67 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // useParams 추가
+import React, { useState, useEffect, Link } from 'react';
+import { useParams } from 'react-router-dom';
 import ItemsTab from '../components/ItemsTab';
 import ReviewsTab from '../components/ReviewsTab';
 import ZzimsTab from '../components/ZzimsTab';
+import EditItemsTab from '../components/EditItemsTab'; // 새로 만들어야 할 컴포넌트
+import { fetchNickName } from '../services/ChatService';
 import {
   fetchShopItems,
   fetchShopReviews,
   fetchZzimlist,
+  fetchShopInfo,
 } from '../services/ShopService';
 
 const MyShopPage = () => {
-  const { sellerId } = useParams(); // URL에서 sellerId 가져오기
+  const { shopId } = useParams();
   const [activeTab, setActiveTab] = useState('items');
+  const [currentUserNickname, setCurrentUserNickname] = useState('');
+  const [shopOwnerNickname, setShopOwnerNickname] = useState('');
+  const [isOwner, setIsOwner] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [itemsCount, setItemsCount] = useState(0);
   const [reviewsCount, setReviewsCount] = useState(0);
   const [zzimsCount, setZzimsCount] = useState(0);
+  const [shopInfo, setShopInfo] = useState({
+    name: '',
+    profileImage: 'https://via.placeholder.com/100',
+    description: '',
+  });
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoading(true);
+        // URL의 shopId 디코딩
+        const decodedShopId = decodeURIComponent(shopId);
+        setShopOwnerNickname(decodedShopId);
 
-        // 각 데이터 로드
-        const items = await fetchShopItems(sellerId);
-        const reviews = await fetchShopReviews(sellerId);
-        const zzims = await fetchZzimlist(sellerId);
+        // 현재 로그인한 사용자의 닉네임 로드
+        const currentNickname = await fetchNickName();
+        setCurrentUserNickname(currentNickname);
+
+        // 현재 사용자가 상점 주인인지 확인
+        setIsOwner(currentUserNickname === decodedShopId);
+
+        // 상점 정보 로드
+        const shopInfoData = await fetchShopInfo(decodedShopId);
+        setShopInfo({
+          name: shopInfoData.name || decodedShopId,
+          profileImage:
+            shopInfoData.profileImage || 'https://via.placeholder.com/100',
+          description: shopInfoData.description || '',
+        });
+
+        // 각 탭 데이터 로드
+        const items = await fetchShopItems(decodedShopId);
+        const reviews = await fetchShopReviews(decodedShopId);
+
+        // 찜 목록은 상점 주인일 경우에만 로드
+        let zzims = [];
+        if (currentNickname === decodedShopId) {
+          zzims = await fetchZzimlist(decodedShopId);
+        }
 
         // 카운트 설정
         setItemsCount(Array.isArray(items) ? items.length : 0);
         setReviewsCount(Array.isArray(reviews) ? reviews.length : 0);
         setZzimsCount(Array.isArray(zzims) ? zzims.length : 0);
-
-        console.log('Counts loaded:', {
-          items: items?.length || 0,
-          reviews: reviews?.length || 0,
-          zzims: zzims?.length || 0,
-        });
       } catch (error) {
         console.error('데이터 로드 실패:', error);
+        setError('상점 정보를 불러오는데 실패했습니다.');
       } finally {
         setLoading(false);
       }
     };
 
     loadData();
-  }, [sellerId]);
+  }, [shopId]);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'items':
-        return <ItemsTab shopId={sellerId} onCountChange={setItemsCount} />;
+        return (
+          <ItemsTab shopId={shopOwnerNickname} onCountChange={setItemsCount} />
+        );
       case 'reviews':
-        return <ReviewsTab shopId={sellerId} onCountChange={setReviewsCount} />;
+        return (
+          <ReviewsTab
+            shopId={shopOwnerNickname}
+            onCountChange={setReviewsCount}
+          />
+        );
       case 'zzims':
-        return <ZzimsTab shopId={sellerId} onCountChange={setZzimsCount} />;
+        return isOwner ? (
+          <ZzimsTab shopId={shopOwnerNickname} onCountChange={setZzimsCount} />
+        ) : null;
+      case 'edit':
+        return isOwner ? <EditItemsTab shopId={shopOwnerNickname} /> : null;
       default:
-        return <ItemsTab shopId={sellerId} onCountChange={setItemsCount} />;
+        return (
+          <ItemsTab shopId={shopOwnerNickname} onCountChange={setItemsCount} />
+        );
     }
   };
 
   if (loading) {
     return <div className="text-center py-8">로딩 중...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500">{error}</div>;
   }
 
   return (
@@ -81,14 +128,22 @@ const MyShopPage = () => {
           {/* 상점 정보 */}
           <div className="flex-grow">
             <div className="flex justify-between items-start mb-4">
-              <h1 className="text-2xl font-bold">{sellerId}</h1>
+              <h1 className="text-2xl font-bold">{shopInfo.name}</h1>
+              {isOwner && (
+                <Link
+                  to="/book/item/register"
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200"
+                >
+                  상품 등록
+                </Link>
+              )}
             </div>
 
             {/* 상점 통계 */}
             <div className="flex gap-4 text-gray-600 mb-4">
               <span>상품 {itemsCount}</span>
-              <span>상점후기 {reviewsCount}</span>
-              <span>찜 {zzimsCount}</span>
+              <span>후기 {reviewsCount}</span>
+              {isOwner && <span>찜 {zzimsCount}</span>}
             </div>
           </div>
         </div>
@@ -116,16 +171,30 @@ const MyShopPage = () => {
         >
           상점후기 {reviewsCount}
         </button>
-        <button
-          onClick={() => setActiveTab('zzims')}
-          className={`py-3 px-6 font-medium ${
-            activeTab === 'zzims'
-              ? 'border-b-2 border-red-500 text-red-500'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          찜 {zzimsCount}
-        </button>
+        {isOwner && (
+          <>
+            <button
+              onClick={() => setActiveTab('zzims')}
+              className={`py-3 px-6 font-medium ${
+                activeTab === 'zzims'
+                  ? 'border-b-2 border-red-500 text-red-500'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              찜 {zzimsCount}
+            </button>
+            <button
+              onClick={() => setActiveTab('edit')}
+              className={`py-3 px-6 font-medium ${
+                activeTab === 'edit'
+                  ? 'border-b-2 border-red-500 text-red-500'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              상품관리
+            </button>
+          </>
+        )}
       </div>
 
       {/* 탭 컨텐츠 */}
@@ -135,7 +204,6 @@ const MyShopPage = () => {
 };
 
 export default MyShopPage;
-
 
 // // pages/MyShopPage.js
 // import React, { useState, useEffect } from 'react';

@@ -1,8 +1,9 @@
-// components/ItemsTab.js
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchShopItems } from '../services/ShopService';
 
 const ItemsTab = ({ shopId, onCountChange }) => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,31 +12,23 @@ const ItemsTab = ({ shopId, onCountChange }) => {
   useEffect(() => {
     const loadShopItems = async () => {
       try {
-        console.log('Loading items for shopId:', shopId);
         if (!shopId) return;
-
         const response = await fetchShopItems(shopId);
-        console.log('Items API Response:', response);
-
         const data = Array.isArray(response) ? response : [];
-        console.log('Formatted data array:', data);
 
-        const formattedProducts = data.map((item) => ({
-          id: item.itemId,
+        const formattedProducts = data.map((item, index) => ({
+          id: item.itemId || `temp-${index}`,
           title: item.title,
           price: item.price,
           status: getStatusText(item.status),
-          imageUrl: item.image || '/fallback-image.png',
+          imageUrl: item.image || null,
           updatedAt: item.modDate,
         }));
 
-        console.log('Final formatted products:', formattedProducts);
         setProducts(formattedProducts);
-
-        // 상품 개수 업데이트
         onCountChange?.(formattedProducts.length);
       } catch (err) {
-        console.error('Error details:', err);
+        console.error('상품 목록을 불러오는데 실패했습니다:', err);
         setError('상품 목록을 불러오는데 실패했습니다.');
       } finally {
         setLoading(false);
@@ -44,6 +37,10 @@ const ItemsTab = ({ shopId, onCountChange }) => {
 
     loadShopItems();
   }, [shopId, onCountChange]);
+
+  const handleItemClick = (itemId) => {
+    navigate(`/items/${itemId}`);
+  };
 
   const getStatusText = (statusCode) => {
     switch (statusCode) {
@@ -63,12 +60,24 @@ const ItemsTab = ({ shopId, onCountChange }) => {
       ? products
       : products.filter((product) => product.status === statusFilter);
 
-  const statusCounts = {
-    전체: products.length,
-    판매중: products.filter((p) => p.status === '판매중').length,
-    예약중: products.filter((p) => p.status === '예약중').length,
-    판매완료: products.filter((p) => p.status === '판매완료').length,
-  };
+  const statusFilters = [
+    { id: 'all', label: '전체', count: products.length },
+    {
+      id: 'selling',
+      label: '판매중',
+      count: products.filter((p) => p.status === '판매중').length,
+    },
+    {
+      id: 'reserved',
+      label: '예약중',
+      count: products.filter((p) => p.status === '예약중').length,
+    },
+    {
+      id: 'sold',
+      label: '판매완료',
+      count: products.filter((p) => p.status === '판매완료').length,
+    },
+  ];
 
   const formatPrice = (price) => {
     return price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') || '0';
@@ -101,37 +110,40 @@ const ItemsTab = ({ shopId, onCountChange }) => {
   return (
     <>
       <div className="flex space-x-4 border-b pb-4 mb-4">
-        {Object.entries(statusCounts).map(([status, count]) => (
+        {statusFilters.map((filter) => (
           <button
-            key={status}
-            onClick={() => setStatusFilter(status)}
+            key={filter.id}
+            onClick={() => setStatusFilter(filter.label)}
             className={`text-center px-4 py-2 rounded-full transition-colors duration-200 ${
-              statusFilter === status
+              statusFilter === filter.label
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
             }`}
           >
-            {status} ({count})
+            {filter.label} ({filter.count})
           </button>
         ))}
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredProducts.map((product) => (
+        {filteredProducts.map((product, index) => (
           <div
-            key={product.id}
-            className="group border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
+            key={`${product.id}-${index}`}
+            onClick={() => handleItemClick(product.id)}
+            className="group border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer"
           >
             <div className="relative pb-[100%]">
-              <img
-                src={product.imageUrl}
-                alt={product.title}
-                className="absolute inset-0 w-full h-full object-cover"
-                onError={(e) => {
-                  console.log('Image load error:', product.title);
-                  e.target.src = '/fallback-image.png';
-                }}
-              />
+              {product.imageUrl ? (
+                <img
+                  src={product.imageUrl}
+                  alt={product.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400">이미지 없음</span>
+                </div>
+              )}
               {product.status === '판매완료' && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                   <span className="text-white font-bold text-lg">판매완료</span>

@@ -3,7 +3,7 @@ import axiosInstance from './AxiosInstance';
 export const fetchNickName = async () => {
   try {
     const response = await axiosInstance.get('/chat/nickname');
-    console.log(response);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log('닉네임을 불러오지 못했습니다.');

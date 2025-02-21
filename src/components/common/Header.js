@@ -100,9 +100,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header
-      className={`shadow-md ${isScrolled ? "bg-white z-10" : ""}`}
-    >
+    <header className={`shadow-md ${isScrolled ? 'bg-white z-10' : ''}`}>
       <div
         className={`flex justify-between items-center px-6 py-4 max-w-screen-xl mx-auto`}
       >
@@ -130,14 +128,11 @@ export default function Header() {
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <>
-              <Link to="/myshop" className="text-gray-700 hover:text-blue-500">
-                MyShop
+              <Link to="/shop" className="text-gray-700 hover:text-blue-500">
+                Shop
               </Link>
-              <Link to="/mychat" className="text-gray-700 hover:text-blue-500">
-                MyChat
-              </Link>
-              <Link to="/myitem" className="text-gray-700 hover:text-blue-500">
-                MyItem
+              <Link to="/chat" className="text-gray-700 hover:text-blue-500">
+                Chat
               </Link>
               <button
                 onClick={logout}
@@ -259,18 +254,6 @@ export default function Header() {
                     ))}
                   </DisclosurePanel>
                 </Disclosure>
-                <Link
-                  to="/features"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  Features
-                </Link>
-                <Link
-                  to="/marketplace"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  Marketplace
-                </Link>
                 <Link
                   to="/company"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"

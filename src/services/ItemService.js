@@ -11,6 +11,7 @@ export const getPaginatedItems = async (page, size) => {
   const response = await axiosInstance.get(`${BASE_URL}/list/page`, {
     params: { page, size },
   });
+  console.log(response);
   return response;
 };
 
@@ -25,7 +26,10 @@ export const registerItem = async (data) => {
 };
 
 export const updateItem = async (itemId, data) => {
-  const response = await axiosInstance.post(`${BASE_URL}/${itemId}/update`, data);
+  const response = await axiosInstance.post(
+    `${BASE_URL}/${itemId}/update`,
+    data
+  );
   return response;
 };
 
